@@ -1,0 +1,6 @@
+.hero-section {
+  height: 60vh;
+  background-image: url('https://unsplash.com/s/photos/farm%2C-organic');
+  background-size: cover;
+  background-position: center;
+}
