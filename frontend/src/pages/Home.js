@@ -1,8 +1,13 @@
+// ✅ Final Home.js with anchor-based scrolling for About, Mission, Values, Contact
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Modal from 'react-bootstrap/Modal';
+import About from "../pages/About";
+import MissionVision from "../pages/MissionVision";
+import OurValues from "../pages/OurValues";
+import Contact from "../pages/Contact";
 
 function Home() {
   const [products, setProducts] = useState([]);
@@ -31,16 +36,16 @@ function Home() {
   };
 
   return (
-    <div className={`home-container ${theme}`}>
+    <div className={`home-container ${theme}`}>      
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
-          <Link className="navbar-brand" to="/">CROSSCRATE EXIM</Link>
+          <a className="navbar-brand" href="#">CROSSCRATE EXIM</a>
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
+              <li className="nav-item"><a className="nav-link" href="#">Home</a></li>
               <li className="nav-item"><a className="nav-link" href="#products">Products</a></li>
               <li className="nav-item"><a className="nav-link" href="#about">About Us</a></li>
-              <li className="nav-item"><a className="nav-link" href="#mission&vision">Mission & Vision</a></li>
+              <li className="nav-item"><a className="nav-link" href="#mission">Mission & Vision</a></li>
               <li className="nav-item"><a className="nav-link" href="#values">Our Values</a></li>
               <li className="nav-item"><a className="nav-link" href="#contact">Contact Us</a></li>
             </ul>
@@ -51,7 +56,7 @@ function Home() {
                 <option value="hi">HI</option>
               </select>
               <button className="btn btn-outline-light btn-sm me-2" onClick={toggleTheme}>Theme</button>
-              <Link to="/admin" className="btn btn-success btn-sm">Login</Link>
+              <a href="/admin" className="btn btn-success btn-sm">Login</a>
             </div>
           </div>
         </div>
@@ -59,7 +64,7 @@ function Home() {
 
       <div className="hero-section d-flex align-items-center justify-content-center" style={{ height: '300px', backgroundImage: `url(${heroImage})`, backgroundSize: 'cover' }}>
         <div className="text-center text-white bg-dark bg-opacity-50 p-3 rounded">
-          <h1>Welcome to Crosscrate Exim</h1>
+          <h1>Welcome to Crosscrate International Exim</h1>
           <p>Organic and High-Quality Fertilizers for Healthy Farming</p>
         </div>
       </div>
@@ -82,12 +87,21 @@ function Home() {
         </div>
       </div>
 
+      {/* Reusing page sections at bottom of Home */}
       <div className="container mt-5" id="about">
-        <h3>About Us</h3>
-        <p>We are committed to delivering sustainable and organic fertilizers that improve crop yield and protect the environment.</p>
-        <h3 className="mt-4" id="contact">Contact Us</h3>
-        <p>Email: info@fertipro.com</p>
-        <p>Phone: +91 98765 43210</p>
+        <About />
+      </div>
+
+      <div className="container mt-5" id="mission">
+        <MissionVision />
+      </div>
+
+      <div className="container mt-5" id="values">
+        <OurValues />
+      </div>
+
+      <div className="container mt-5" id="contact">
+        <Contact />
       </div>
 
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>

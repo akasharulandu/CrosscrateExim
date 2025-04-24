@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -26,6 +27,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+          
       </Routes>
     </Router>
   );

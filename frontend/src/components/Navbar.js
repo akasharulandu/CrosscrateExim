@@ -17,9 +17,14 @@ function Navbar({ theme, toggleTheme, language, setLanguage, isAdmin, setIsAdmin
       <div className="collapse navbar-collapse">
         <ul className="navbar-nav me-auto">
           <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
-          <li className="nav-item"><Link className="nav-link" to="/products">Products</Link></li>
+          {/* <li className="nav-item"><Link className="nav-link" to="/products">Products</Link></li>
           <li className="nav-item"><Link className="nav-link" to="/about">About</Link></li>
-          <li className="nav-item"><Link className="nav-link" to="/contact">Contact</Link></li>
+          <li className="nav-item"><Link className="nav-link" to="/contact">Contact</Link></li> */}
+            <li className="nav-item"><Link className="nav-link" to="/products">Products</Link></li>
+             <li className="nav-item"><Link className="nav-link" to="/about">About Us</Link></li>
+             <li className="nav-item"><Link className="nav-link" to="/mission">Mission & Vision</Link></li>
+             <li className="nav-item"><Link className="nav-link" to="/values">Our Values</Link></li>
+             <li className="nav-item"><Link className="nav-link" to="/contact">Contact Us</Link></li>
         </ul>
         <div className="d-flex align-items-center">
           <label className="text-white me-2">Theme</label>
