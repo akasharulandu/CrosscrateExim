@@ -34,13 +34,14 @@ function Home() {
     <div className={`home-container ${theme}`}>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
-          <Link className="navbar-brand" to="/">Crosscrate Exim</Link>
+          <Link className="navbar-brand" to="/">CROSSCRATE EXIM</Link>
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
               <li className="nav-item"><a className="nav-link" href="#products">Products</a></li>
-              <li className="nav-item"><a className="nav-link" href="#certification">Certification</a></li>
-              <li className="nav-item"><a className="nav-link" href="#about">About</a></li>
+              <li className="nav-item"><a className="nav-link" href="#about">About Us</a></li>
+              <li className="nav-item"><a className="nav-link" href="#mission&vision">Mission & Vision</a></li>
+              <li className="nav-item"><a className="nav-link" href="#values">Our Values</a></li>
               <li className="nav-item"><a className="nav-link" href="#contact">Contact Us</a></li>
             </ul>
             <div className="d-flex">
@@ -49,7 +50,7 @@ function Home() {
                 <option value="ta">TA</option>
                 <option value="hi">HI</option>
               </select>
-              <button className="btn btn-outline-light btn-sm me-2" onClick={toggleTheme}>Toggle Theme</button>
+              <button className="btn btn-outline-light btn-sm me-2" onClick={toggleTheme}>Theme</button>
               <Link to="/admin" className="btn btn-success btn-sm">Login</Link>
             </div>
           </div>
