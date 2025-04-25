@@ -40,7 +40,7 @@ function Home() {
 
   return (
     <div className={`home-container ${theme}`}>      
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div className="container">
           <a className="navbar-brand" href="#">CROSSCRATE EXIM</a>
           <div className="collapse navbar-collapse">

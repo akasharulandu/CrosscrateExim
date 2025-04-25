@@ -15,9 +15,9 @@ const ProductCard = ({ product, onClick }) => {
             style={{ height: '200px', objectFit: 'cover' }}
           />
         )}
-        <div className="card-body">
+        <div className="card-body text-center">
           <h5 className="card-title">{product.name}</h5>
-          <p className={`card-text ${expanded ? '' : 'text-truncate-description'}`}>
+          {/* <p className={`card-text ${expanded ? '' : 'text-truncate-description'}`}>
             {product.description}
           </p>
           {product.description?.split(' ').length > 20 && (
@@ -30,8 +30,8 @@ const ProductCard = ({ product, onClick }) => {
             >
               {expanded ? 'Show Less' : 'Read More'}
             </button>
-          )}
-          <p className="text-success">Price: ₹{product.price}</p>
+          )} */}
+          {/* <p className="text-success">Price: ₹{product.price}</p> */}
         </div>
       </div>
     </div>

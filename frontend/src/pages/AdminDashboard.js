@@ -137,7 +137,6 @@ function AdminDashboard() {
                 {editingId === product._id ? (
                   <>
                     <input type="text" className="form-control mb-2" value={editData.name} onChange={(e) => setEditData({ ...editData, name: e.target.value })} />
-                    {/* <input type="text" className="form-control mb-2" value={editData.description} onChange={(e) => setEditData({ ...editData, description: e.target.value })} /> */}
                     {!product.showFullDescription ? (
       <>
         <p className="text-truncate-description mb-1">
