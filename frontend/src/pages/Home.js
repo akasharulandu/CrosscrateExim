@@ -75,21 +75,9 @@ function Home() {
       <div className="container mt-5" id="products">
         <h2 className="text-center mb-4">Our Products</h2>
         <div className="row">
-          {/* {products.map((product) => (
-            <div className="col-md-4 mb-3" key={product._id}>
-              <div className="card h-100" onClick={() => openModal(product)} style={{ cursor: 'pointer' }}>
-                {product.imageUrl && <img src={product.imageUrl} alt={product.name} className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />}
-                <div className="card-body">
-                  <h5 className="card-title">{product.name}</h5>
-                  <p className="card-text text-truncate-description">{product.description}</p>
-                  <p className="text-success">Price: ₹{product.price}</p>
-                </div>
-              </div>
-            </div>
-          ))} */}
           {products.map((product) => (
-  <ProductCard key={product._id} product={product} onClick={openModal} />
-))}
+          <ProductCard key={product._id} product={product} onClick={openModal} />
+          ))}
         </div>
       </div>
 

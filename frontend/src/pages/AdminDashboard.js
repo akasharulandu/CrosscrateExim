@@ -137,7 +137,49 @@ function AdminDashboard() {
                 {editingId === product._id ? (
                   <>
                     <input type="text" className="form-control mb-2" value={editData.name} onChange={(e) => setEditData({ ...editData, name: e.target.value })} />
-                    <input type="text" className="form-control mb-2" value={editData.description} onChange={(e) => setEditData({ ...editData, description: e.target.value })} />
+                    {/* <input type="text" className="form-control mb-2" value={editData.description} onChange={(e) => setEditData({ ...editData, description: e.target.value })} /> */}
+                    {!product.showFullDescription ? (
+      <>
+        <p className="text-truncate-description mb-1">
+          {editData.description}
+        </p>
+        <button
+          type="button"
+          className="btn btn-link p-0 mb-2"
+          onClick={() => {
+            const updated = [...products];
+            const index = updated.findIndex((p) => p._id === product._id);
+            updated[index].showFullDescription = true;
+            setProducts(updated);
+          }}
+        >
+          Read More
+        </button>
+      </>
+    ) : (
+      <>
+        <textarea
+          className="form-control mb-2"
+          rows={6}
+          value={editData.description}
+          onChange={(e) =>
+            setEditData({ ...editData, description: e.target.value })
+          }
+        />
+        <button
+          type="button"
+          className="btn btn-link p-0 mb-2"
+          onClick={() => {
+            const updated = [...products];
+            const index = updated.findIndex((p) => p._id === product._id);
+            updated[index].showFullDescription = false;
+            setProducts(updated);
+          }}
+        >
+          Show Less
+        </button>
+      </>
+    )}
                     <input type="number" className="form-control mb-2" value={editData.price} onChange={(e) => setEditData({ ...editData, price: e.target.value })} />
                     <button className="btn btn-primary btn-sm me-2" onClick={() => saveEdit(product._id)}>Save</button>
                     <button className="btn btn-secondary btn-sm" onClick={() => setEditingId(null)}>Cancel</button>
@@ -152,7 +194,7 @@ function AdminDashboard() {
                   </>
                 )}
               </div>
-            </div>
+            </div>  
           </div>
         ))}
       </div>
