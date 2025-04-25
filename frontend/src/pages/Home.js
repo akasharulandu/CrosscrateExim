@@ -1,6 +1,7 @@
 // ✅ Final Home.js with anchor-based scrolling for About, Mission, Values, Contact
 
 import React, { useEffect, useState } from "react";
+import './Home.css';
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Modal from 'react-bootstrap/Modal';
@@ -8,6 +9,8 @@ import About from "../pages/About";
 import MissionVision from "../pages/MissionVision";
 import OurValues from "../pages/OurValues";
 import Contact from "../pages/Contact";
+import ProductCard from "../components/ProductCard";
+
 
 function Home() {
   const [products, setProducts] = useState([]);
@@ -51,9 +54,9 @@ function Home() {
             </ul>
             <div className="d-flex">
               <select className="form-select form-select-sm me-2" value={language} onChange={handleLanguageChange}>
-                <option value="en">EN</option>
-                <option value="ta">TA</option>
-                <option value="hi">HI</option>
+                <option value="en">English</option>
+                <option value="ta">Tamil</option>
+                <option value="hi">Hindi</option>
               </select>
               <button className="btn btn-outline-light btn-sm me-2" onClick={toggleTheme}>Theme</button>
               <a href="/admin" className="btn btn-success btn-sm">Login</a>
@@ -72,18 +75,21 @@ function Home() {
       <div className="container mt-5" id="products">
         <h2 className="text-center mb-4">Our Products</h2>
         <div className="row">
-          {products.map((product) => (
+          {/* {products.map((product) => (
             <div className="col-md-4 mb-3" key={product._id}>
               <div className="card h-100" onClick={() => openModal(product)} style={{ cursor: 'pointer' }}>
                 {product.imageUrl && <img src={product.imageUrl} alt={product.name} className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />}
                 <div className="card-body">
                   <h5 className="card-title">{product.name}</h5>
-                  <p className="card-text">{product.description}</p>
+                  <p className="card-text text-truncate-description">{product.description}</p>
                   <p className="text-success">Price: ₹{product.price}</p>
                 </div>
               </div>
             </div>
-          ))}
+          ))} */}
+          {products.map((product) => (
+  <ProductCard key={product._id} product={product} onClick={openModal} />
+))}
         </div>
       </div>
 
