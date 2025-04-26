@@ -1,6 +1,5 @@
-// ✅ Final Home.js with anchor-based scrolling for About, Mission, Values, Contact
-
 import React, { useEffect, useState } from "react";
+import { Button, Table } from 'react-bootstrap';
 import './Home.css';
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -11,7 +10,6 @@ import OurValues from "../pages/OurValues";
 import Contact from "../pages/Contact";
 import ProductCard from "../components/ProductCard";
 
-
 function Home() {
   const [products, setProducts] = useState([]);
   const [theme, setTheme] = useState("light");
@@ -20,8 +18,17 @@ function Home() {
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
+  // Fetch products and hero image
+  const fetchProducts = () => {
+    axios.get("/api/products")
+      .then((res) => {
+        setProducts(res.data);  // Update state with the fetched products
+      })
+      .catch((err) => console.error("Error fetching products:", err));
+  };
+
   useEffect(() => {
-    axios.get("/api/products").then((res) => setProducts(res.data));
+    fetchProducts(); // Initial fetch for products
     axios.get("/api/hero").then((res) => setHeroImage(res.data?.imageUrl));
   }, []);
 
@@ -38,8 +45,10 @@ function Home() {
     setShowModal(true);
   };
 
+  const handleClose = () => setShowModal(false); // Close modal function
+
   return (
-    <div className={`home-container ${theme}`}>      
+    <div className={`home-container ${theme}`}>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div className="container">
           <a className="navbar-brand" href="#">CROSSCRATE EXIM</a>
@@ -74,13 +83,13 @@ function Home() {
 
       <div className="container mt-5" id="products">
         <h2 className="text-center mb-4">Our Products</h2>
-        <div className="row">
+        <div className="row"> 
           {products.map((product) => (
-          <ProductCard key={product._id} product={product} onClick={openModal} />
+            <ProductCard key={product._id} product={product} onClick={openModal} />
           ))}
         </div>
       </div>
-
+      
       {/* Reusing page sections at bottom of Home */}
       <div className="container mt-5" id="about">
         <About />
@@ -98,7 +107,7 @@ function Home() {
         <Contact />
       </div>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+      <Modal show={showModal} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>{selectedProduct?.name}</Modal.Title>
         </Modal.Header>
@@ -106,7 +115,37 @@ function Home() {
           {selectedProduct?.imageUrl && <img src={selectedProduct.imageUrl} alt={selectedProduct.name} className="img-fluid mb-3" />}
           <p><strong>Description:</strong> {selectedProduct?.description}</p>
           <p><strong>Price:</strong> ₹{selectedProduct?.price}</p>
+
+          {/* Dimensions Table */}
+          <div className="table-responsive mt-4">
+            <Table bordered hover>
+              <thead className="thead-dark">
+                <tr>
+                  <th>Item</th>
+                  <th>Weight</th>
+                  <th>Expansion</th>
+                  <th>Dimension</th>
+                  <th>Compositions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{selectedProduct?.item || '-'}</td>
+                  <td>{selectedProduct?.weight || '-'}</td>
+                  <td>{selectedProduct?.expansion || '-'}</td>
+                  <td>{selectedProduct?.dimension || '-'}</td>
+                  <td>{selectedProduct?.compositions || '-'}</td>
+                </tr>
+              </tbody>
+            </Table>
+          </div>
         </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

@@ -1,4 +1,4 @@
-// ✅ Complete and Secure server.js for Crosscrate Exim
+// ✅ Complete and Secure server.js for Crosscrate Exim with Background Image Upload
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -30,6 +30,11 @@ const Product = mongoose.model("Product", {
 
 const HeroImage = mongoose.model("HeroImage", {
   imageUrl: String
+});
+
+const LoginBackground = mongoose.model("LoginBackground", {
+  imageUrl: String,
+  uploadedAt: { type: Date, default: Date.now }
 });
 
 // JWT Auth Middleware
@@ -108,6 +113,19 @@ app.post("/api/hero/upload", authMiddleware, upload.single("photo"), async (req,
   const hero = new HeroImage({ imageUrl: `/uploads/${req.file.filename}` });
   await hero.save();
   res.json(hero);
+});
+
+// ✅ POST Login Background Upload (Admin only)
+app.post("/api/login-background/upload", authMiddleware, upload.single("bgImage"), async (req, res) => {
+  const background = new LoginBackground({ imageUrl: `/uploads/${req.file.filename}` });
+  await background.save();
+  res.json({ success: true, imageUrl: background.imageUrl });
+});
+
+// ✅ GET Latest Login Background Image (Public)
+app.get("/api/login-background", async (req, res) => {
+  const latest = await LoginBackground.findOne().sort({ uploadedAt: -1 });
+  res.json({ imageUrl: latest?.imageUrl || "" });
 });
 
 // Start Server

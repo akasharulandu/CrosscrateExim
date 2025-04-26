@@ -6,10 +6,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 function AdminDashboard() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-  const [newProduct, setNewProduct] = useState({ name: "", description: "", price: "" });
+  const [newProduct, setNewProduct] = useState({ name: "", description: "", price: "", weight: "", expansion: "", dimension: "", compositions: "" });
   const [photo, setPhoto] = useState(null);
   const [editingId, setEditingId] = useState(null);
-  const [editData, setEditData] = useState({ name: "", description: "", price: "" });
+  const [editData, setEditData] = useState({ name: "", description: "", price: "", weight: "", expansion: "", dimension: "", compositions: "" });
   const [heroPhoto, setHeroPhoto] = useState(null);
   const [heroPreview, setHeroPreview] = useState(null);
 
@@ -28,6 +28,11 @@ function AdminDashboard() {
     formData.append("name", newProduct.name);
     formData.append("description", newProduct.description);
     formData.append("price", newProduct.price);
+    formData.append("item", newProduct.item);
+    formData.append("weight", newProduct.weight);
+    formData.append("expansion", newProduct.expansion);
+    formData.append("dimension", newProduct.dimension);
+    formData.append("compositions", newProduct.compositions);
     if (photo) formData.append("photo", photo);
 
     try {
@@ -38,7 +43,7 @@ function AdminDashboard() {
         }
       });
       alert("Product uploaded!");
-      setNewProduct({ name: "", description: "", price: "" });
+      setNewProduct({ name: "", description: "", price: "", item: "", weight: "", expansion: "", dimension: "", compositions: "" });
       setPhoto(null);
       fetchProducts();
     } catch (err) {
@@ -79,7 +84,7 @@ function AdminDashboard() {
 
   const startEdit = (product) => {
     setEditingId(product._id);
-    setEditData({ name: product.name, description: product.description, price: product.price });
+    setEditData({ name: product.name, description: product.description, price: product.price, item: product.item, weight: product.weight, expansion: product.expansion, dimension: product.dimension, compositions: product.compositions });
   };
 
   const saveEdit = async (id) => {
@@ -107,10 +112,19 @@ function AdminDashboard() {
       <form onSubmit={addProduct} className="mb-4">
         <input type="text" placeholder="Product Name" className="form-control mb-2"
           value={newProduct.name} onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })} required />
-        <input type="text" placeholder="Description" className="form-control mb-2"
-          value={newProduct.description} onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })} required />
+        <textarea className="form-control mb-2" rows={6} value={editData.description} onChange={(e) => setEditData({ ...editData, description: e.target.value })} />
         <input type="number" placeholder="Price" className="form-control mb-2"
           value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })} required />
+          <input type="text" placeholder="Item" className="form-control mb-2"
+          value={newProduct.item} onChange={(e) => setNewProduct({ ...newProduct, item: e.target.value })} required />
+        <input type="text" placeholder="Weight" className="form-control mb-2"
+          value={newProduct.weight} onChange={(e) => setNewProduct({ ...newProduct, weight: e.target.value })} required />
+        <input type="text" placeholder="Expansion" className="form-control mb-2"
+          value={newProduct.expansion} onChange={(e) => setNewProduct({ ...newProduct, expansion: e.target.value })} required />
+        <input type="text" placeholder="Dimension" className="form-control mb-2"
+          value={newProduct.dimension} onChange={(e) => setNewProduct({ ...newProduct, dimension: e.target.value })} required />
+        <input type="text" placeholder="Compositions" className="form-control mb-2"
+          value={newProduct.compositions} onChange={(e) => setNewProduct({ ...newProduct, compositions: e.target.value })} required />
         <input type="file" className="form-control mb-2" onChange={(e) => setPhoto(e.target.files[0])} />
         <button type="submit" className="btn btn-success">Add Product</button>
       </form>
@@ -137,49 +151,13 @@ function AdminDashboard() {
                 {editingId === product._id ? (
                   <>
                     <input type="text" className="form-control mb-2" value={editData.name} onChange={(e) => setEditData({ ...editData, name: e.target.value })} />
-                    {!product.showFullDescription ? (
-      <>
-        <p className="text-truncate-description mb-1">
-          {editData.description}
-        </p>
-        <button
-          type="button"
-          className="btn btn-link p-0 mb-2"
-          onClick={() => {
-            const updated = [...products];
-            const index = updated.findIndex((p) => p._id === product._id);
-            updated[index].showFullDescription = true;
-            setProducts(updated);
-          }}
-        >
-          Read More
-        </button>
-      </>
-    ) : (
-      <>
-        <textarea
-          className="form-control mb-2"
-          rows={6}
-          value={editData.description}
-          onChange={(e) =>
-            setEditData({ ...editData, description: e.target.value })
-          }
-        />
-        <button
-          type="button"
-          className="btn btn-link p-0 mb-2"
-          onClick={() => {
-            const updated = [...products];
-            const index = updated.findIndex((p) => p._id === product._id);
-            updated[index].showFullDescription = false;
-            setProducts(updated);
-          }}
-        >
-          Show Less
-        </button>
-      </>
-    )}
-                    <input type="number" className="form-control mb-2" value={editData.price} onChange={(e) => setEditData({ ...editData, price: e.target.value })} />
+                    <textarea className="form-control mb-2" rows={6} value={editData.description} onChange={(e) => setEditData({ ...editData, description: e.target.value })} />
+                    <input type="number" placeholder="Price" className="form-control mb-2" value={editData.price} onChange={(e) => setEditData({ ...editData, price: e.target.value })} />
+                    <input type="text" placeholder="Item" className="form-control mb-2" value={editData.item} onChange={(e) => setEditData({ ...editData, item: e.target.value })} />
+                    <input type="text" placeholder="Weight" className="form-control mb-2" value={editData.weight} onChange={(e) => setEditData({ ...editData, weight: e.target.value })} />
+                    <input type="text" placeholder="Expansion" className="form-control mb-2" value={editData.expansion} onChange={(e) => setEditData({ ...editData, expansion: e.target.value })} />
+                    <input type="text" placeholder="Dimension" className="form-control mb-2" value={editData.dimension} onChange={(e) => setEditData({ ...editData, dimension: e.target.value })} />
+                    <input type="text" placeholder="Composition" className="form-control mb-2" value={editData.compositions} onChange={(e) => setEditData({ ...editData, compositions: e.target.value })} />
                     <button className="btn btn-primary btn-sm me-2" onClick={() => saveEdit(product._id)}>Save</button>
                     <button className="btn btn-secondary btn-sm" onClick={() => setEditingId(null)}>Cancel</button>
                   </>
@@ -193,7 +171,7 @@ function AdminDashboard() {
                   </>
                 )}
               </div>
-            </div>  
+            </div>
           </div>
         ))}
       </div>

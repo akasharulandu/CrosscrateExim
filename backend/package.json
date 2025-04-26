@@ -19,3 +19,16 @@
         "nodemon": "^3.0.1"
     }
 }
+
+{
+    "name": "Coco Grow Bag",
+    "description": "Perfect for hydroponic farming",
+    "price": "200",
+    "imageUrl": "url-to-photo",
+    "item": "Grow Bag",
+    "weight": "2 kg",
+    "expansion": "6-8 liters",
+    "dimension": "100cm x 18cm x 15cm",
+    "compositions": "Coir Pith, Coir Chips"
+  }
+  
