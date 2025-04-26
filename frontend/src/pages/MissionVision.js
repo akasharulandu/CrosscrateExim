@@ -1,5 +1,7 @@
 import React from 'react';
 import './MissionVision.css'; // Add this line to import the custom styles
+import languageText from "../utils/languageText";
+
 
 function MissionVision() {
   return (

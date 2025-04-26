@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table } from 'react-bootstrap';
-import './ProductCard.css'; // Make sure to create this file
+import './ProductCard.css';
+import ProductDimensionTable from './ProductDimensionTable'; // Importing dimension table
 
 const ProductCard = ({ product, onClick }) => {
   const [expanded, setExpanded] = useState(false);
@@ -23,23 +24,35 @@ const ProductCard = ({ product, onClick }) => {
         )}
         <div className="card-body text-center">
           <h5 className="card-title">{product.name}</h5>
-            {/* Description
-          <p className={`card-text ${expanded ? '' : 'text-truncate-description'}`}>
-            {product.description}
-          </p>
-          {product.description?.split(' ').length > 20 && (
-            <button
-              className="btn btn-link p-0"
-              onClick={(e) => {
-                e.stopPropagation(); // Prevent modal opening
-                setExpanded(!expanded);
-              }}
-            >
-              {expanded ? 'Show Less' : 'Read More'}
-            </button>
+
+          {/* Description
+          {product.description && (
+            <>
+              <p className={`card-text ${expanded ? '' : 'text-truncate-description'}`}>
+                {product.description}
+              </p>
+              {product.description.split(' ').length > 20 && (
+                <button
+                  className="btn btn-link p-0"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent modal opening
+                    setExpanded(!expanded);
+                  }}
+                >
+                  {expanded ? 'Show Less' : 'Read More'}
+                </button>
+              )}
+            </>
+          )} */}
+
+          {/* Product Dimensions Table */}
+          {product.dimensions && (
+            <div className="mt-3">
+              <ProductDimensionTable dimensions={product.dimensions} />
+            </div>
           )}
-          
-          {/* Price */}
+
+          {/* Price (Optional - Uncomment if needed) */}
           {/* <p className="text-success">Price: ₹{product.price}</p> */}
         </div>
       </div>
@@ -48,3 +61,4 @@ const ProductCard = ({ product, onClick }) => {
 };
 
 export default ProductCard;
+

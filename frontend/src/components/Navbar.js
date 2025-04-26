@@ -1,6 +1,8 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import languageText from "../utils/languageText";
+
 
 function Navbar({ theme, toggleTheme, language, setLanguage, isAdmin, setIsAdmin }) {
   const navigate = useNavigate();

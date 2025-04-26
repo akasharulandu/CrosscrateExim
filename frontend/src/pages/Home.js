@@ -9,6 +9,7 @@ import MissionVision from "../pages/MissionVision";
 import OurValues from "../pages/OurValues";
 import Contact from "../pages/Contact";
 import ProductCard from "../components/ProductCard";
+import languageText from "../utils/languageText";
 
 function Home() {
   const [products, setProducts] = useState([]);
@@ -18,17 +19,14 @@ function Home() {
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // Fetch products and hero image
   const fetchProducts = () => {
     axios.get("/api/products")
-      .then((res) => {
-        setProducts(res.data);  // Update state with the fetched products
-      })
+      .then((res) => setProducts(res.data))
       .catch((err) => console.error("Error fetching products:", err));
   };
 
   useEffect(() => {
-    fetchProducts(); // Initial fetch for products
+    fetchProducts();
     axios.get("/api/hero").then((res) => setHeroImage(res.data?.imageUrl));
   }, []);
 
@@ -45,7 +43,7 @@ function Home() {
     setShowModal(true);
   };
 
-  const handleClose = () => setShowModal(false); // Close modal function
+  const handleClose = () => setShowModal(false);
 
   return (
     <div className={`home-container ${theme}`}>
@@ -54,12 +52,12 @@ function Home() {
           <a className="navbar-brand" href="#">CROSSCRATE EXIM</a>
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item"><a className="nav-link" href="#">Home</a></li>
-              <li className="nav-item"><a className="nav-link" href="#products">Products</a></li>
-              <li className="nav-item"><a className="nav-link" href="#about">About Us</a></li>
-              <li className="nav-item"><a className="nav-link" href="#mission">Mission & Vision</a></li>
-              <li className="nav-item"><a className="nav-link" href="#values">Our Values</a></li>
-              <li className="nav-item"><a className="nav-link" href="#contact">Contact Us</a></li>
+              <li className="nav-item"><a className="nav-link" href="#">{languageText[language].navbar.home}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#products">{languageText[language].navbar.products}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#about">{languageText[language].navbar.about}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#mission">{languageText[language].navbar.mission}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#values">{languageText[language].navbar.values}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#contact">{languageText[language].navbar.contact}</a></li>
             </ul>
             <div className="d-flex">
               <select className="form-select form-select-sm me-2" value={language} onChange={handleLanguageChange}>
@@ -68,7 +66,7 @@ function Home() {
                 <option value="hi">Hindi</option>
               </select>
               <button className="btn btn-outline-light btn-sm me-2" onClick={toggleTheme}>Theme</button>
-              <a href="/admin" className="btn btn-success btn-sm">Login</a>
+              <a href="/admin" className="btn btn-success btn-sm">{languageText[language].navbar.login}</a>
             </div>
           </div>
         </div>
@@ -76,35 +74,34 @@ function Home() {
 
       <div className="hero-section d-flex align-items-center justify-content-center" style={{ height: '300px', backgroundImage: `url(${heroImage})`, backgroundSize: 'cover' }}>
         <div className="text-center text-white bg-dark bg-opacity-50 p-3 rounded">
-          <h1>Welcome to Crosscrate International Exim</h1>
-          <p>Organic and High-Quality Fertilizers for Healthy Farming</p>
+          <h1>{languageText[language].welcome}</h1>
+          <p>{languageText[language].tagline}</p>
         </div>
       </div>
 
       <div className="container mt-5" id="products">
-        <h2 className="text-center mb-4">Our Products</h2>
-        <div className="row"> 
+        <h2 className="text-center mb-4">{languageText[language].navbar.products}</h2>
+        <div className="row">
           {products.map((product) => (
             <ProductCard key={product._id} product={product} onClick={openModal} />
           ))}
         </div>
       </div>
-      
-      {/* Reusing page sections at bottom of Home */}
+
       <div className="container mt-5" id="about">
-        <About />
+        <About language={language} />
       </div>
 
       <div className="container mt-5" id="mission">
-        <MissionVision />
+        <MissionVision language={language} />
       </div>
 
       <div className="container mt-5" id="values">
-        <OurValues />
+        <OurValues language={language} />
       </div>
 
       <div className="container mt-5" id="contact">
-        <Contact />
+        <Contact language={language} />
       </div>
 
       <Modal show={showModal} onHide={handleClose} centered>
@@ -115,35 +112,10 @@ function Home() {
           {selectedProduct?.imageUrl && <img src={selectedProduct.imageUrl} alt={selectedProduct.name} className="img-fluid mb-3" />}
           <p><strong>Description:</strong> {selectedProduct?.description}</p>
           <p><strong>Price:</strong> ₹{selectedProduct?.price}</p>
-
-          {/* Dimensions Table */}
-          <div className="table-responsive mt-4">
-            <Table bordered hover>
-              <thead className="thead-dark">
-                <tr>
-                  <th>Item</th>
-                  <th>Weight</th>
-                  <th>Expansion</th>
-                  <th>Dimension</th>
-                  <th>Compositions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{selectedProduct?.item || '-'}</td>
-                  <td>{selectedProduct?.weight || '-'}</td>
-                  <td>{selectedProduct?.expansion || '-'}</td>
-                  <td>{selectedProduct?.dimension || '-'}</td>
-                  <td>{selectedProduct?.compositions || '-'}</td>
-                </tr>
-              </tbody>
-            </Table>
-          </div>
         </Modal.Body>
-
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            {languageText[language].submit}
           </Button>
         </Modal.Footer>
       </Modal>

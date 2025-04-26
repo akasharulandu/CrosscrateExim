@@ -1,5 +1,7 @@
 import React from 'react';
 import './About.css'; // Import the CSS styling
+import languageText from "../utils/languageText";
+
 
 function About() {
   return (

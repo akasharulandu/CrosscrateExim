@@ -1,5 +1,7 @@
 import React from 'react';
 import './OurValues.css'; // We'll define this CSS next
+import languageText from "../utils/languageText";
+
 
 function OurValues() {
   return (
