@@ -1,52 +1,45 @@
-// ✅ Complete and Secure server.js for Crosscrate Exim (ES Modules version)
-
 import express from "express";
-import mongoose from "mongoose";  // <-- Only import it once
+import mongoose from "mongoose";
 import cors from "cors";
 import multer from "multer";
 import jwt from "jsonwebtoken";
 import path from "path";
 import dotenv from "dotenv";
-import { fileURLToPath } from 'url';
-
 dotenv.config();
 
+// Initialize Express app
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
-// ✅ Needed because __dirname is undefined in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Serve static files
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
+// MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
+// Secret key for JWT
 const SECRET = "supersecretkey";
 
-// Admin login (hardcoded for now)
+// Admin credentials (hardcoded for now)
 const ADMIN = { username: "admin", password: "admin123" };
 
-// Models
-const Product = mongoose.model("Product", new mongoose.Schema({
+// MongoDB Models
+const Product = mongoose.model("Product", {
   name: String,
   description: String,
   price: Number,
   imageUrl: String
-}));
+});
 
-const HeroImage = mongoose.model("HeroImage", new mongoose.Schema({
+const HeroImage = mongoose.model("HeroImage", {
   imageUrl: String
-}));
+});
 
-const LoginBackground = mongoose.model("LoginBackground", new mongoose.Schema({
+const LoginBackground = mongoose.model("LoginBackground", {
   imageUrl: String,
   uploadedAt: { type: Date, default: Date.now }
-}));
+});
 
-// JWT Auth Middleware
+// JWT Authentication Middleware
 const authMiddleware = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.sendStatus(401);
@@ -58,14 +51,14 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-// Multer storage config
+// Multer configuration for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 const upload = multer({ storage });
 
-// Admin Login Route
+// Admin Login Route (GET token)
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN.username && password === ADMIN.password) {
@@ -124,14 +117,14 @@ app.post("/api/hero/upload", authMiddleware, upload.single("photo"), async (req,
   res.json(hero);
 });
 
-// POST Login Background Upload (Admin only)
+// ✅ POST Login Background Upload (Admin only)
 app.post("/api/login-background/upload", authMiddleware, upload.single("bgImage"), async (req, res) => {
   const background = new LoginBackground({ imageUrl: `/uploads/${req.file.filename}` });
   await background.save();
   res.json({ success: true, imageUrl: background.imageUrl });
 });
 
-// GET Latest Login Background Image (Public)
+// ✅ GET Latest Login Background Image (Public)
 app.get("/api/login-background", async (req, res) => {
   const latest = await LoginBackground.findOne().sort({ uploadedAt: -1 });
   res.json({ imageUrl: latest?.imageUrl || "" });
@@ -139,4 +132,4 @@ app.get("/api/login-background", async (req, res) => {
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
