@@ -45,12 +45,12 @@ const ProductCard = ({ product, onClick }) => {
             </>
           )} */}
 
-          {/* Product Dimensions Table */}
+          {/* Product Dimensions Table
           {product.dimensions && (
             <div className="mt-3">
               <ProductDimensionTable dimensions={product.dimensions} />
             </div>
-          )}
+          )} */}
 
           {/* Price (Optional - Uncomment if needed) */}
           {/* <p className="text-success">Price: ₹{product.price}</p> */}

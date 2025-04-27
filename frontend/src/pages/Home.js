@@ -115,7 +115,7 @@ function Home() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            {languageText[language].submit}
+            Close
           </Button>
         </Modal.Footer>
       </Modal>

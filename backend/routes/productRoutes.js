@@ -1,11 +1,12 @@
-const express = require('express');
+import express from 'express';
+import productController from '../controllers/productController.js'; // Use import instead of require
+import { isAdmin } from '../middleware/authMiddleware.js'; // Use import instead of require
+
 const router = express.Router();
-const productController = require('../controllers/productController');
-const { isAdmin } = require('../middleware/authMiddleware'); // You must have admin middleware
 
 // Existing routes...
 
-// New Route
+// New Route to update dimensions of a product
 router.put('/product/:id/dimensions', isAdmin, productController.updateDimensions);
 
-module.exports = router;
+export default router;  // Use export default

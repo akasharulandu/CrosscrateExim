@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AdminManageDimensions from '../components/AdminManageDimensions'; // <<== Added here
 import languageText from "../utils/languageText";
-
+import ProductTable from "../components/ProductTable";
+import EditProductDimensions from "../components/ProductDimensionTable";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -113,36 +114,68 @@ function AdminDashboard() {
       </div>
 
       {/* Add New Product Form */}
-      <form onSubmit={addProduct} className="w-50">
-        <input type="text" placeholder="Product Name" className="form-control mb-2"
-          value={newProduct.name} onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })} required />
-        <textarea className="form-control mb-2" rows={6} placeholder="Product Description"
-          value={newProduct.description} onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })} />
-        <input type="number" placeholder="Price" className="form-control mb-2"
-          value={newProduct.price} onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })} required />
-        <input type="file" className="form-control mb-2" onChange={(e) => setPhoto(e.target.files[0])} />
+      <form onSubmit={addProduct} className="w-50 mb-5">
+        <input
+          type="text"
+          placeholder="Product Name"
+          className="form-control mb-2"
+          value={newProduct.name}
+          onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+          required
+        />
+        <textarea
+          className="form-control mb-2"
+          rows={6}
+          placeholder="Product Description"
+          value={newProduct.description}
+          onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+        />
+        <input
+          type="number"
+          placeholder="Price"
+          className="form-control mb-2"
+          value={newProduct.price}
+          onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+          required
+        />
+        <input
+          type="file"
+          className="form-control mb-2"
+          onChange={(e) => setPhoto(e.target.files[0])}
+        />
         <button type="submit" className="btn btn-success">Add Product</button>
       </form>
 
       {/* Hero Image Upload */}
-      <div className= "w-50">
+      <div className="w-50 mb-5">
         <h4>Update Hero Image</h4>
         <form onSubmit={uploadHeroImage}>
-          <input type="file" className="form-control mb-2" onChange={(e) => {
-            setHeroPhoto(e.target.files[0]);
-            setHeroPreview(URL.createObjectURL(e.target.files[0]));
-          }} />
-          {heroPreview && <img src={heroPreview} alt="Hero Preview" className="img-fluid mb-2" style={{ maxHeight: '200px' }} />}
+          <input
+            type="file"
+            className="form-control mb-2"
+            onChange={(e) => {
+              setHeroPhoto(e.target.files[0]);
+              setHeroPreview(URL.createObjectURL(e.target.files[0]));
+            }}
+          />
+          {heroPreview && (
+            <img
+              src={heroPreview}
+              alt="Hero Preview"
+              className="img-fluid mb-2"
+              style={{ maxHeight: '200px' }}
+            />
+          )}
           <button type="submit" className="btn btn-primary">Upload Hero Image</button>
         </form>
       </div>
-
+<ProductTable/>
       {/* Current Products */}
       <h4>Current Products</h4>
       <div className="row">
         {products.map((product) => (
-          <div key={product._id} className="col-md-4 mb-3">
-            <div className="card">
+          <div key={product._id} className="col-md-4 mb-4">
+            <div className="card h-100">
               {product.imageUrl && (
                 <img
                   src={product.imageUrl}
@@ -154,22 +187,60 @@ function AdminDashboard() {
               <div className="card-body">
                 {editingId === product._id ? (
                   <>
-                    <input type="text" className="form-control mb-2" value={editData.name} onChange={(e) => setEditData({ ...editData, name: e.target.value })} />
-                    <textarea className="form-control mb-2" rows={6} value={editData.description} onChange={(e) => setEditData({ ...editData, description: e.target.value })} />
-                    <input type="number" className="form-control mb-2" placeholder="Price" value={editData.price} onChange={(e) => setEditData({ ...editData, price: e.target.value })} />
-        
+                    <input
+                      type="text"
+                      className="form-control mb-2"
+                      value={editData.name}
+                      onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                    />
+                    <textarea
+                      className="form-control mb-2"
+                      rows={6}
+                      value={editData.description}
+                      onChange={(e) => setEditData({ ...editData, description: e.target.value })}
+                    />
+                    <input
+                      type="number"
+                      className="form-control mb-2"
+                      placeholder="Price"
+                      value={editData.price}
+                      onChange={(e) => setEditData({ ...editData, price: e.target.value })}
+                    />
+                    
                     {/* AdminManageDimensions for editing dimensions */}
                     <AdminManageDimensions productId={product._id} initialDimensions={product.dimension} />
-                    <button className="btn btn-primary btn-sm me-2" onClick={() => saveEdit(product._id)}>Save</button>
-                    <button className="btn btn-secondary btn-sm" onClick={() => setEditingId(null)}>Cancel</button>
+                  
+            
+                    <button
+                      className="btn btn-primary btn-sm me-2 mt-2"
+                      onClick={() => saveEdit(product._id)}
+                    >
+                      Save
+                    </button>
+                    <button
+                      className="btn btn-secondary btn-sm mt-2"
+                      onClick={() => setEditingId(null)}
+                    >
+                      Cancel
+                    </button>
                   </>
                 ) : (
                   <>
                     <h5 className="card-title">{product.name}</h5>
                     <p className="card-text">{product.description}</p>
                     <p className="card-text text-success">₹{product.price}</p>
-                    <button className="btn btn-warning btn-sm me-2" onClick={() => startEdit(product)}>Edit</button>
-                    <button className="btn btn-danger btn-sm" onClick={() => deleteProduct(product._id)}>Delete</button>
+                    <button
+                      className="btn btn-warning btn-sm me-2"
+                      onClick={() => startEdit(product)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => deleteProduct(product._id)}
+                    >
+                      Delete
+                    </button>
                   </>
                 )}
               </div>
