@@ -27,17 +27,20 @@ const Product = mongoose.model("Product", {
   name: String,
   description: String,
   price: Number,
-  imageUrl: String
-});
-
-const HeroImage = mongoose.model("HeroImage", {
-  imageUrl: String
-});
-
-const LoginBackground = mongoose.model("LoginBackground", {
   imageUrl: String,
-  uploadedAt: { type: Date, default: Date.now }
+  dimensions: [{
+    ref: String,
+    grade: String,
+    length: String,
+    width: String,
+    height: String,
+    recommendedFor: String,
+    extraOptions: String,
+  }]
 });
+
+const HeroImage = mongoose.model("HeroImage", { imageUrl: String });
+const LoginBackground = mongoose.model("LoginBackground", { imageUrl: String, uploadedAt: { type: Date, default: Date.now } });
 
 // JWT Authentication Middleware
 const authMiddleware = (req, res, next) => {
@@ -76,12 +79,13 @@ app.get("/api/products", async (req, res) => {
 
 // POST Product Upload (Admin only)
 app.post("/api/products/upload", authMiddleware, upload.single("photo"), async (req, res) => {
-  const { name, description, price } = req.body;
+  const { name, description, price, dimensions } = req.body;
   const product = new Product({
     name,
     description,
     price,
-    imageUrl: req.file ? `/uploads/${req.file.filename}` : ""
+    imageUrl: req.file ? `/uploads/${req.file.filename}` : "",
+    dimensions: JSON.parse(dimensions) || [] // Parse dimensions if provided
   });
   await product.save();
   res.json(product);
@@ -94,11 +98,19 @@ app.delete("/api/products/:id", authMiddleware, async (req, res) => {
 });
 
 // PUT Product (Admin only)
-app.put("/api/products/:id", authMiddleware, async (req, res) => {
-  const { name, description, price } = req.body;
+app.put("/api/products/:id", authMiddleware, upload.single("photo"), async (req, res) => {
+  const { name, description, price, dimensions } = req.body;
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : undefined;
+
   const updated = await Product.findByIdAndUpdate(
     req.params.id,
-    { name, description, price },
+    { 
+      name,
+      description,
+      price,
+      imageUrl: imageUrl || undefined,
+      dimensions: JSON.parse(dimensions) || [] // Update dimensions if provided
+    },
     { new: true }
   );
   res.json(updated);

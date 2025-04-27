@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table } from 'react-bootstrap';
 import './ProductCard.css';
-import ProductDimensionTable from './ProductDimensionTable'; // Importing dimension table
 
 const ProductCard = ({ product, onClick }) => {
   const [expanded, setExpanded] = useState(false);

@@ -45,6 +45,9 @@ function Home() {
 
   const handleClose = () => setShowModal(false);
 
+  // Safe fallback for languageText
+  const navbarText = languageText[language] || {}; // Fallback to empty object if language is not found
+
   return (
     <div className={`home-container ${theme}`}>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -52,12 +55,12 @@ function Home() {
           <a className="navbar-brand" href="#">CROSSCRATE EXIM</a>
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item"><a className="nav-link" href="#">{languageText[language].navbar.home}</a></li>
-              <li className="nav-item"><a className="nav-link" href="#products">{languageText[language].navbar.products}</a></li>
-              <li className="nav-item"><a className="nav-link" href="#about">{languageText[language].navbar.about}</a></li>
-              <li className="nav-item"><a className="nav-link" href="#mission">{languageText[language].navbar.mission}</a></li>
-              <li className="nav-item"><a className="nav-link" href="#values">{languageText[language].navbar.values}</a></li>
-              <li className="nav-item"><a className="nav-link" href="#contact">{languageText[language].navbar.contact}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#">{navbarText.navbar?.home || 'Home'}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#products">{navbarText.navbar?.products || 'Products'}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#about">{navbarText.navbar?.about || 'About'}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#mission">{navbarText.navbar?.mission || 'Mission'}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#values">{navbarText.navbar?.values || 'Values'}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#contact">{navbarText.navbar?.contact || 'Contact'}</a></li>
             </ul>
             <div className="d-flex">
               <select className="form-select form-select-sm me-2" value={language} onChange={handleLanguageChange}>
@@ -66,7 +69,7 @@ function Home() {
                 <option value="hi">Hindi</option>
               </select>
               <button className="btn btn-outline-light btn-sm me-2" onClick={toggleTheme}>Theme</button>
-              <a href="/admin" className="btn btn-success btn-sm">{languageText[language].navbar.login}</a>
+              <a href="/admin" className="btn btn-success btn-sm">{navbarText.navbar?.login || 'Login'}</a>
             </div>
           </div>
         </div>
@@ -74,13 +77,13 @@ function Home() {
 
       <div className="hero-section d-flex align-items-center justify-content-center" style={{ height: '300px', backgroundImage: `url(${heroImage})`, backgroundSize: 'cover' }}>
         <div className="text-center text-white bg-dark bg-opacity-50 p-3 rounded">
-          <h1>{languageText[language].welcome}</h1>
-          <p>{languageText[language].tagline}</p>
+          <h1>{navbarText.welcome || 'Welcome to Crosscrate Exim'}</h1>
+          <p>{navbarText.tagline || 'Your one-stop solution for all fertilizers'}</p>
         </div>
       </div>
 
       <div className="container mt-5" id="products">
-        <h2 className="text-center mb-4">{languageText[language].navbar.products}</h2>
+        <h2 className="text-center mb-4">{navbarText.navbar?.products || 'Products'}</h2>
         <div className="row">
           {products.map((product) => (
             <ProductCard key={product._id} product={product} onClick={openModal} />

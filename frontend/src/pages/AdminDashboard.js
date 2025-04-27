@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import AdminManageDimensions from '../components/AdminManageDimensions'; // <<== Added here
+import AdminManageDimensions from '../components/AdminManageDimensions'; // Import for managing dimensions
 import languageText from "../utils/languageText";
-import ProductTable from "../components/ProductTable";
-import EditProductDimensions from "../components/ProductDimensionTable";
+import ProductTable from "../components/ProductTable"
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -88,7 +87,16 @@ function AdminDashboard() {
 
   const startEdit = (product) => {
     setEditingId(product._id);
-    setEditData({ name: product.name, description: product.description, price: product.price, item: product.item, weight: product.weight, expansion: product.expansion, dimension: product.dimension, compositions: product.compositions });
+    setEditData({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      item: product.item,
+      weight: product.weight,
+      expansion: product.expansion,
+      dimension: product.dimension,
+      compositions: product.compositions
+    });
   };
 
   const saveEdit = async (id) => {
@@ -169,7 +177,9 @@ function AdminDashboard() {
           <button type="submit" className="btn btn-primary">Upload Hero Image</button>
         </form>
       </div>
-<ProductTable/>
+
+      <ProductTable />
+
       {/* Current Products */}
       <h4>Current Products</h4>
       <div className="row">
@@ -209,8 +219,7 @@ function AdminDashboard() {
                     
                     {/* AdminManageDimensions for editing dimensions */}
                     <AdminManageDimensions productId={product._id} initialDimensions={product.dimension} />
-                  
-            
+
                     <button
                       className="btn btn-primary btn-sm me-2 mt-2"
                       onClick={() => saveEdit(product._id)}
