@@ -73,23 +73,33 @@ const ProductTable = () => {
   const handleFormSubmit = async () => {
     try {
       const values = await form.validateFields();
-
+  
       const formData = new FormData();
       formData.append('name', values.name);
+      formData.append('price', values.price);
       formData.append('description', values.description);
       formData.append('dimensions', JSON.stringify(dimensions));
+  
+      // Add image if available
       if (fileList[0]?.originFileObj) {
-        formData.append('photo', fileList[0].originFileObj); // <-- Correct field name is 'photo'
+        formData.append('photo', fileList[0].originFileObj);
       }
-
+  
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`, // important: send token
+          'Content-Type': 'multipart/form-data',
+        },
+      };
+  
       if (editingProduct) {
-        await axios.put(`/api/products/${editingProduct._id}`, formData);
+        await axios.put(`/api/products/${editingProduct._id}`, formData, config);
         message.success('Product updated successfully');
       } else {
-        await axios.post('/api/products/upload', formData); // <-- Correct endpoint
+        await axios.post('/api/products/upload', formData, config);
         message.success('Product added successfully');
       }
-
+  
       setModalOpen(false);
       fetchProducts();
     } catch (error) {
@@ -97,6 +107,7 @@ const ProductTable = () => {
       message.error('Failed to save product');
     }
   };
+  
 
   const handleDimensionAdd = () => {
     if (dimensionInput.trim() !== '') {
@@ -216,8 +227,7 @@ const ProductTable = () => {
           >
             <Input />
           </Form.Item>
-          
-          <Form form={form} layout="vertical">
+
           <Form.Item
             name="price"
             label="Product Price"
@@ -225,8 +235,6 @@ const ProductTable = () => {
           >
             <Input type="number" placeholder="Enter price" />
           </Form.Item>
-          </Form>
-
 
           <Form.Item
             name="description"
