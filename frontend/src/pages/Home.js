@@ -4,6 +4,7 @@ import './Home.css';
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Modal from 'react-bootstrap/Modal';
+import { Link } from "react-router-dom"; // ADDED
 import About from "../pages/About";
 import MissionVision from "../pages/MissionVision";
 import OurValues from "../pages/OurValues";
@@ -11,7 +12,7 @@ import Contact from "../pages/Contact";
 import ProductCard from "../components/ProductCard";
 import languageText from "../utils/languageText";
 
-function Home() {
+function Home({ isAdmin }) { // RECEIVE isAdmin
   const [products, setProducts] = useState([]);
   const [theme, setTheme] = useState("light");
   const [language, setLanguage] = useState("en");
@@ -45,8 +46,7 @@ function Home() {
 
   const handleClose = () => setShowModal(false);
 
-  // Safe fallback for languageText
-  const navbarText = languageText[language] || {}; // Fallback to empty object if language is not found
+  const navbarText = languageText[language] || {};
 
   return (
     <div className={`home-container ${theme}`}>
@@ -69,7 +69,27 @@ function Home() {
                 <option value="hi">Hindi</option>
               </select>
               <button className="btn btn-outline-light btn-sm me-2" onClick={toggleTheme}>Theme</button>
-              <a href="/admin" className="btn btn-success btn-sm">{navbarText.navbar?.login || 'Login'}</a>
+              {isAdmin ? (
+  <>
+    <Link to="/dashboard" className="btn btn-warning btn-sm me-2">
+      Admin Panel
+    </Link>
+    <button
+      className="btn btn-danger btn-sm"
+      onClick={() => {
+        localStorage.removeItem("token");
+        window.location.href = "/";
+      }}
+    >
+      Logout
+    </button>
+  </>
+) : (
+  <a href="/admin" className="btn btn-success btn-sm">
+    {navbarText.navbar?.login || 'Login'}
+  </a>
+)}
+
             </div>
           </div>
         </div>

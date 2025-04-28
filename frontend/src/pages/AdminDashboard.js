@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import AdminManageDimensions from '../components/AdminManageDimensions'; // Import for managing dimensions
+import AdminManageDimensions from '../components/AdminManageDimensions'; 
 import languageText from "../utils/languageText";
-import ProductTable from "../components/ProductTable"
+import ProductTable from "../components/ProductTable";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -16,14 +16,27 @@ function AdminDashboard() {
   const [heroPhoto, setHeroPhoto] = useState(null);
   const [heroPreview, setHeroPreview] = useState(null);
 
-  const fetchProducts = async () => {
-    const res = await axios.get("/api/products");
-    setProducts(res.data);
-  };
-
   useEffect(() => {
-    fetchProducts();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login"); // If token missing, redirect to login
+    } else {
+      fetchProducts();
+    }
   }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get("/api/products", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      setProducts(res.data);
+    } catch (err) {
+      console.error("Fetching products failed:", err);
+    }
+  };
 
   const addProduct = async (e) => {
     e.preventDefault();
@@ -77,12 +90,16 @@ function AdminDashboard() {
   };
 
   const deleteProduct = async (id) => {
-    await axios.delete(`/api/products/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
-    });
-    fetchProducts();
+    try {
+      await axios.delete(`/api/products/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      fetchProducts();
+    } catch (err) {
+      console.error("Delete product failed:", err);
+    }
   };
 
   const startEdit = (product) => {
@@ -100,28 +117,39 @@ function AdminDashboard() {
   };
 
   const saveEdit = async (id) => {
-    await axios.put(`/api/products/${id}`, editData, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
-      }
-    });
-    setEditingId(null);
-    fetchProducts();
+    try {
+      await axios.put(`/api/products/${id}`, editData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
+      setEditingId(null);
+      fetchProducts();
+    } catch (err) {
+      console.error("Edit product failed:", err);
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/");
+    navigate("/"); // Clear token, then go home
+  };
+
+  const goBackToHome = () => {
+    navigate("/"); // Just go home without touching token
   };
 
   return (
     <div className="container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Admin Dashboard</h2>
-        <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
+        <div>
+          <button className="btn btn-secondary me-2" onClick={goBackToHome}>Back to Home</button>
+          <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
+        </div>
       </div>
 
-      {/* Add New Product Form */}
+      {/* Add New Product */}
       <form onSubmit={addProduct} className="w-50 mb-5">
         <input
           type="text"
@@ -180,7 +208,6 @@ function AdminDashboard() {
 
       <ProductTable />
 
-      {/* Current Products */}
       <h4>Current Products</h4>
       <div className="row">
         {products.map((product) => (
@@ -212,14 +239,10 @@ function AdminDashboard() {
                     <input
                       type="number"
                       className="form-control mb-2"
-                      placeholder="Price"
                       value={editData.price}
                       onChange={(e) => setEditData({ ...editData, price: e.target.value })}
                     />
-                    
-                    {/* AdminManageDimensions for editing dimensions */}
                     <AdminManageDimensions productId={product._id} initialDimensions={product.dimension} />
-
                     <button
                       className="btn btn-primary btn-sm me-2 mt-2"
                       onClick={() => saveEdit(product._id)}
