@@ -138,6 +138,11 @@ const ProductTable = () => {
       key: 'name',
     },
     {
+      title: 'Price',
+      dataIndex: 'price',
+      key: 'price',
+    },
+    {
       title: 'Description',
       dataIndex: 'description',
       key: 'description',
@@ -211,6 +216,17 @@ const ProductTable = () => {
           >
             <Input />
           </Form.Item>
+          
+          <Form form={form} layout="vertical">
+          <Form.Item
+            name="price"
+            label="Product Price"
+            rules={[{ required: true, message: 'Please enter product price' }]}
+          >
+            <Input type="number" placeholder="Enter price" />
+          </Form.Item>
+          </Form>
+
 
           <Form.Item
             name="description"
