@@ -13,7 +13,6 @@ const ProductTable = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [dimensions, setDimensions] = useState([]);
-  const [dimensionInput, setDimensionInput] = useState('');
 
   useEffect(() => {
     fetchProducts();
@@ -23,11 +22,7 @@ const ProductTable = () => {
     setLoading(true);
     try {
       const response = await axios.get('/api/products');
-      const updatedProducts = response.data.map(product => ({
-        ...product,
-        image: product.imageUrl, // Map imageUrl to image
-      }));
-      setProducts(updatedProducts);
+      setProducts(response.data);
     } catch (error) {
       console.error(error);
       message.error('Failed to fetch products');
@@ -47,7 +42,9 @@ const ProductTable = () => {
   const handleEditProduct = (record) => {
     form.setFieldsValue(record);
     setDimensions(record.dimensions || []);
-    setFileList(record.image ? [{ uid: '-1', name: 'image.png', status: 'done', url: record.image }] : []);
+    setFileList(
+      record.imageUrl ? [{ uid: '-1', name: 'image.png', status: 'done', url: record.imageUrl }] : []
+    );
     setEditingProduct(record);
     setModalOpen(true);
   };
@@ -59,7 +56,11 @@ const ProductTable = () => {
       cancelText: 'No',
       onOk: async () => {
         try {
-          await axios.delete(`/api/products/${id}`);
+          await axios.delete(`/api/products/${id}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
           message.success('Product deleted successfully');
           fetchProducts();
         } catch (error) {
@@ -73,25 +74,23 @@ const ProductTable = () => {
   const handleFormSubmit = async () => {
     try {
       const values = await form.validateFields();
-  
       const formData = new FormData();
       formData.append('name', values.name);
       formData.append('price', values.price);
       formData.append('description', values.description);
       formData.append('dimensions', JSON.stringify(dimensions));
-  
-      // Add image if available
+
       if (fileList[0]?.originFileObj) {
         formData.append('photo', fileList[0].originFileObj);
       }
-  
+
       const config = {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`, // important: send token
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'multipart/form-data',
         },
       };
-  
+
       if (editingProduct) {
         await axios.put(`/api/products/${editingProduct._id}`, formData, config);
         message.success('Product updated successfully');
@@ -99,7 +98,7 @@ const ProductTable = () => {
         await axios.post('/api/products/upload', formData, config);
         message.success('Product added successfully');
       }
-  
+
       setModalOpen(false);
       fetchProducts();
     } catch (error) {
@@ -107,21 +106,32 @@ const ProductTable = () => {
       message.error('Failed to save product');
     }
   };
-  
 
-  const handleDimensionAdd = () => {
-    if (dimensionInput.trim() !== '') {
-      setDimensions([...dimensions, dimensionInput.trim()]);
-      setDimensionInput('');
-    } else {
-      message.warning('Dimension cannot be empty');
-    }
+  const handleDimensionChange = (index, field, value) => {
+    const updated = [...dimensions];
+    updated[index][field] = value;
+    setDimensions(updated);
   };
 
-  const handleDimensionRemove = (index) => {
-    const updatedDimensions = [...dimensions];
-    updatedDimensions.splice(index, 1);
-    setDimensions(updatedDimensions);
+  const handleAddDimensionRow = () => {
+    setDimensions([
+      ...dimensions,
+      {
+        ref: '',
+        grade: '',
+        length: '',
+        width: '',
+        height: '',
+        recommendedFor: '',
+        extraOptions: '',
+      },
+    ]);
+  };
+
+  const handleRemoveDimensionRow = (index) => {
+    const updated = [...dimensions];
+    updated.splice(index, 1);
+    setDimensions(updated);
   };
 
   const uploadProps = {
@@ -138,8 +148,8 @@ const ProductTable = () => {
   const columns = [
     {
       title: 'Image',
-      dataIndex: 'image',
-      key: 'image',
+      dataIndex: 'imageUrl',
+      key: 'imageUrl',
       render: (text) =>
         text ? <img src={text} alt="product" style={{ width: 80, height: 80, objectFit: 'cover' }} /> : 'No Image',
     },
@@ -166,7 +176,7 @@ const ProductTable = () => {
       render: (dims) => (
         <ul style={{ paddingLeft: '20px' }}>
           {dims?.map((dim, index) => (
-            <li key={index}>{dim}</li>
+            <li key={index}>{`${dim.ref} | ${dim.grade} | ${dim.length}x${dim.width}x${dim.height}`}</li>
           ))}
         </ul>
       ),
@@ -176,16 +186,8 @@ const ProductTable = () => {
       key: 'actions',
       render: (_, record) => (
         <>
-          <Button
-            icon={<EditOutlined />}
-            style={{ marginRight: 8 }}
-            onClick={() => handleEditProduct(record)}
-          />
-          <Button
-            icon={<DeleteOutlined />}
-            danger
-            onClick={() => handleDeleteProduct(record._id)}
-          />
+          <Button icon={<EditOutlined />} style={{ marginRight: 8 }} onClick={() => handleEditProduct(record)} />
+          <Button icon={<DeleteOutlined />} danger onClick={() => handleDeleteProduct(record._id)} />
         </>
       ),
     },
@@ -193,12 +195,7 @@ const ProductTable = () => {
 
   return (
     <div style={{ padding: '24px' }}>
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        style={{ marginBottom: '16px' }}
-        onClick={handleAddProduct}
-      >
+      <Button type="primary" icon={<PlusOutlined />} style={{ marginBottom: '16px' }} onClick={handleAddProduct}>
         Add Product
       </Button>
 
@@ -218,6 +215,7 @@ const ProductTable = () => {
         onCancel={() => setModalOpen(false)}
         onOk={handleFormSubmit}
         destroyOnClose
+        width={1000}
       >
         <Form form={form} layout="vertical">
           <Form.Item
@@ -245,31 +243,95 @@ const ProductTable = () => {
           </Form.Item>
 
           <Form.Item label="Dimensions">
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-              <Input
-                placeholder="Enter dimension"
-                value={dimensionInput}
-                onChange={(e) => setDimensionInput(e.target.value)}
+            <Button type="dashed" onClick={handleAddDimensionRow} block icon={<PlusOutlined />}>
+              Add Dimension Row
+            </Button>
+            <Table
+              dataSource={dimensions}
+              pagination={false}
+              rowKey={(record, index) => index}
+              style={{ marginTop: 16 }}
+              size="small"
+            >
+              <Table.Column
+                title="Ref"
+                dataIndex="ref"
+                render={(text, record, index) => (
+                  <Input
+                    value={text}
+                    onChange={(e) => handleDimensionChange(index, 'ref', e.target.value)}
+                  />
+                )}
               />
-              <Button type="primary" onClick={handleDimensionAdd}>
-                Add
-              </Button>
-            </div>
-            <ul>
-              {dimensions.map((dim, index) => (
-                <li key={index}>
-                  {dim}{' '}
-                  <Button
-                    size="small"
-                    type="text"
-                    danger
-                    onClick={() => handleDimensionRemove(index)}
-                  >
-                    Remove
+              <Table.Column
+                title="Grade"
+                dataIndex="grade"
+                render={(text, record, index) => (
+                  <Input
+                    value={text}
+                    onChange={(e) => handleDimensionChange(index, 'grade', e.target.value)}
+                  />
+                )}
+              />
+              <Table.Column
+                title="Length"
+                dataIndex="length"
+                render={(text, record, index) => (
+                  <Input
+                    value={text}
+                    onChange={(e) => handleDimensionChange(index, 'length', e.target.value)}
+                  />
+                )}
+              />
+              <Table.Column
+                title="Width"
+                dataIndex="width"
+                render={(text, record, index) => (
+                  <Input
+                    value={text}
+                    onChange={(e) => handleDimensionChange(index, 'width', e.target.value)}
+                  />
+                )}
+              />
+              <Table.Column
+                title="Height"
+                dataIndex="height"
+                render={(text, record, index) => (
+                  <Input
+                    value={text}
+                    onChange={(e) => handleDimensionChange(index, 'height', e.target.value)}
+                  />
+                )}
+              />
+              <Table.Column
+                title="Recommended For"
+                dataIndex="recommendedFor"
+                render={(text, record, index) => (
+                  <Input
+                    value={text}
+                    onChange={(e) => handleDimensionChange(index, 'recommendedFor', e.target.value)}
+                  />
+                )}
+              />
+              <Table.Column
+                title="Extra Options"
+                dataIndex="extraOptions"
+                render={(text, record, index) => (
+                  <Input
+                    value={text}
+                    onChange={(e) => handleDimensionChange(index, 'extraOptions', e.target.value)}
+                  />
+                )}
+              />
+              <Table.Column
+                title="Action"
+                render={(_, __, index) => (
+                  <Button danger type="text" onClick={() => handleRemoveDimensionRow(index)}>
+                    Delete
                   </Button>
-                </li>
-              ))}
-            </ul>
+                )}
+              />
+            </Table>
           </Form.Item>
 
           <Form.Item label="Product Image">
