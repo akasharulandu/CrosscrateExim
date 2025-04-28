@@ -19,6 +19,7 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
   const [heroImage, setHeroImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false); // ADDED
 
   const fetchProducts = () => {
     axios.get("/api/products")
@@ -50,6 +51,13 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
 
   return (
     <div className={`home-container ${theme}`}>
+      {/* Logout Alert - Slide-in Effect */}
+      {showLogoutAlert && (
+        <div className="alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3 slide-in-alert" role="alert" style={{ zIndex: 9999 }}>
+          Logout Successful!
+        </div>
+      )}
+
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div className="container">
           <a className="navbar-brand" href="#">CROSSCRATE EXIM</a>
@@ -70,26 +78,28 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
               </select>
               <button className="btn btn-outline-light btn-sm me-2" onClick={toggleTheme}>Theme</button>
               {isAdmin ? (
-  <>
-    <Link to="/dashboard" className="btn btn-warning btn-sm me-2">
-      Admin Panel
-    </Link>
-    <button
-      className="btn btn-danger btn-sm"
-      onClick={() => {
-        localStorage.removeItem("token");
-        window.location.href = "/";
-      }}
-    >
-      Logout
-    </button>
-  </>
-) : (
-  <a href="/admin" className="btn btn-success btn-sm">
-    {navbarText.navbar?.login || 'Login'}
-  </a>
-)}
-
+                <>
+                  <Link to="/dashboard" className="btn btn-warning btn-sm me-2">
+                    Admin Panel
+                  </Link>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => {
+                      localStorage.removeItem("token");
+                      setShowLogoutAlert(true); // Show logout success alert
+                      setTimeout(() => {
+                        window.location.href = "/"; // Redirect after 1.5s
+                      }, 1500);
+                    }}
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <a href="/admin" className="btn btn-success btn-sm">
+                  {navbarText.navbar?.login || 'Login'}
+                </a>
+              )}
             </div>
           </div>
         </div>
