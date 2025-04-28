@@ -1,5 +1,3 @@
-// ProductTable.js
-
 import React, { useState, useEffect } from 'react';
 import { Table, Modal, Button, Form, Input, Upload, message, Spin } from 'antd';
 import { PlusOutlined, UploadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -25,7 +23,11 @@ const ProductTable = () => {
     setLoading(true);
     try {
       const response = await axios.get('/api/products');
-      setProducts(response.data);
+      const updatedProducts = response.data.map(product => ({
+        ...product,
+        image: product.imageUrl, // Map imageUrl to image
+      }));
+      setProducts(updatedProducts);
     } catch (error) {
       console.error(error);
       message.error('Failed to fetch products');
@@ -77,14 +79,14 @@ const ProductTable = () => {
       formData.append('description', values.description);
       formData.append('dimensions', JSON.stringify(dimensions));
       if (fileList[0]?.originFileObj) {
-        formData.append('image', fileList[0].originFileObj);
+        formData.append('photo', fileList[0].originFileObj); // <-- Correct field name is 'photo'
       }
 
       if (editingProduct) {
         await axios.put(`/api/products/${editingProduct._id}`, formData);
         message.success('Product updated successfully');
       } else {
-        await axios.post('/api/products', formData);
+        await axios.post('/api/products/upload', formData); // <-- Correct endpoint
         message.success('Product added successfully');
       }
 
