@@ -107,8 +107,8 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
 
       <div className="hero-section d-flex align-items-center justify-content-center" style={{ height: '300px', backgroundImage: `url(${heroImage})`, backgroundSize: 'cover' }}>
         <div className="text-center text-white bg-dark bg-opacity-50 p-3 rounded">
-          <h1>{navbarText.welcome || 'Welcome to Crosscrate Exim'}</h1>
-          <p>{navbarText.tagline || 'Your one-stop solution for all fertilizers'}</p>
+          <h1>{navbarText.welcome || 'Welcome to Crosscrate International Exim'}</h1>
+          <p>{navbarText.tagline || 'Your one-stop solution for all cocopeat products'}</p>
         </div>
       </div>
 

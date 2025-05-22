@@ -5,7 +5,7 @@ import languageText from "../utils/languageText";
 
 function About() {
   return (
-    <div className="about-section container my-5 p-5 text-white">
+    <div className="about-section container my-5 p-5 text-white" >
       <h2 className="text-center fw-bold">About Us</h2>
       <p>
         Our company was established by two agriculture graduates from
