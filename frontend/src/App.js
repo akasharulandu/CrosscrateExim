@@ -10,13 +10,13 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) setIsAdmin(true);  // Checks if a valid token exists and sets isAdmin to true
+    if (token) setIsAdmin(true);
   }, []);
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home isAdmin={isAdmin} />} />
         <Route path="/admin" element={<Login setIsAdmin={setIsAdmin} />} />
         <Route
           path="/dashboard"

@@ -1,115 +1,193 @@
-// ✅ Complete and Secure server.js for Crosscrate Exim
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import multer from "multer";
+import jwt from "jsonwebtoken";
+import path from "path";
+import dotenv from "dotenv";
 
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const multer = require("multer");
-const jwt = require("jsonwebtoken");
-const path = require("path");
-require("dotenv").config();
+// Load environment variables
+dotenv.config();
 
+// Initialize Express app
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+// MongoDB connection
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log("MongoDB connected successfully"))
+.catch((err) => console.error("MongoDB connection error:", err));
 
-const SECRET = "supersecretkey";
+// Secret key for JWT
+const SECRET = process.env.JWT_SECRET || "supersecretkey"; // use env variable if possible
 
-// Admin login (hardcoded for now)
+// Admin credentials (hardcoded for now, but recommend moving to env)
 const ADMIN = { username: "admin", password: "admin123" };
 
-// Models
-const Product = mongoose.model("Product", {
+// MongoDB Models
+const Product = mongoose.model("Product", new mongoose.Schema({
   name: String,
   description: String,
   price: Number,
-  imageUrl: String
-});
+  imageUrl: String,
+  dimensions: [{
+    ref: String,
+    grade: String,
+    length: String,
+    width: String,
+    height: String,
+    recommendedFor: String,
+    extraOptions: String,
+  }]
+}));
 
-const HeroImage = mongoose.model("HeroImage", {
+const HeroImage = mongoose.model("HeroImage", new mongoose.Schema({
   imageUrl: String
-});
+}));
 
-// JWT Auth Middleware
+const LoginBackground = mongoose.model("LoginBackground", new mongoose.Schema({
+  imageUrl: String,
+  uploadedAt: { type: Date, default: Date.now }
+}));
+
+// JWT Authentication Middleware
 const authMiddleware = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.sendStatus(401);
+  if (!token) return res.status(401).json({ message: "No token provided" });
   try {
     jwt.verify(token, SECRET);
     next();
-  } catch {
-    res.sendStatus(403);
+  } catch (err) {
+    res.status(403).json({ message: "Invalid or expired token" });
   }
 };
 
-// Multer storage config
+// Multer configuration for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 const upload = multer({ storage });
 
-// Admin Login Route
+// ------------------- Routes -------------------
+
+// Admin Login Route (Get token)
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN.username && password === ADMIN.password) {
     const token = jwt.sign({ user: username }, SECRET, { expiresIn: "1h" });
     return res.json({ success: true, token });
   }
-  res.status(401).json({ success: false });
+  res.status(401).json({ success: false, message: "Invalid credentials" });
 });
 
-// GET Products (Public)
+// Get all Products (Public)
 app.get("/api/products", async (req, res) => {
-  const products = await Product.find();
-  res.json(products);
+  try {
+    const products = await Product.find();
+    res.json(products);
+  } catch (err) {
+    console.error('Error fetching products:', err.message);
+    res.status(500).json({ message: "Failed to fetch products", error: err.message });
+  }
 });
 
-// POST Product Upload (Admin only)
+// Upload new Product (Admin only)
 app.post("/api/products/upload", authMiddleware, upload.single("photo"), async (req, res) => {
-  const { name, description, price } = req.body;
-  const product = new Product({
-    name,
-    description,
-    price,
-    imageUrl: req.file ? `/uploads/${req.file.filename}` : ""
-  });
-  await product.save();
-  res.json(product);
+  try {
+    const { name, description, price, dimensions } = req.body;
+    const newProduct = new Product({
+      name,
+      description,
+      price,
+      imageUrl: req.file ? `/uploads/${req.file.filename}` : "",
+      dimensions: dimensions ? JSON.parse(dimensions) : []
+    });
+    await newProduct.save();
+    res.json(newProduct);
+  } catch (err) {
+    res.status(500).json({ message: "Product upload failed" });
+  }
 });
 
-// DELETE Product (Admin only)
+// Delete Product (Admin only)
 app.delete("/api/products/:id", authMiddleware, async (req, res) => {
-  await Product.findByIdAndDelete(req.params.id);
-  res.json({ success: true });
+  try {
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete product" });
+  }
 });
 
-// PUT Product (Admin only)
-app.put("/api/products/:id", authMiddleware, async (req, res) => {
-  const { name, description, price } = req.body;
-  const updated = await Product.findByIdAndUpdate(
-    req.params.id,
-    { name, description, price },
-    { new: true }
-  );
-  res.json(updated);
+// Update Product (Admin only)
+app.put("/api/products/:id", authMiddleware, upload.single("photo"), async (req, res) => {
+  try {
+    const { name, description, price, dimensions } = req.body;
+    const updateData = {
+      name,
+      description,
+      price,
+      dimensions: dimensions ? JSON.parse(dimensions) : [],
+    };
+    if (req.file) {
+      updateData.imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    res.json(updatedProduct);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update product" });
+  }
 });
 
-// GET Hero Image (Public)
+// Get Hero Image (Public)
 app.get("/api/hero", async (req, res) => {
-  const image = await HeroImage.findOne().sort({ _id: -1 });
-  res.json(image || {});
+  try {
+    const heroImage = await HeroImage.findOne().sort({ _id: -1 });
+    res.json(heroImage || {});
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch hero image" });
+  }
 });
 
-// POST Hero Image Upload (Admin only)
+// Upload Hero Image (Admin only)
 app.post("/api/hero/upload", authMiddleware, upload.single("photo"), async (req, res) => {
-  const hero = new HeroImage({ imageUrl: `/uploads/${req.file.filename}` });
-  await hero.save();
-  res.json(hero);
+  try {
+    const newHeroImage = new HeroImage({ imageUrl: `/uploads/${req.file.filename}` });
+    await newHeroImage.save();
+    res.json(newHeroImage);
+  } catch (err) {
+    res.status(500).json({ message: "Hero image upload failed" });
+  }
 });
 
-// Start Server
+// Upload Login Background (Admin only)
+app.post("/api/login-background/upload", authMiddleware, upload.single("bgImage"), async (req, res) => {
+  try {
+    const newBackground = new LoginBackground({ imageUrl: `/uploads/${req.file.filename}` });
+    await newBackground.save();
+    res.json({ success: true, imageUrl: newBackground.imageUrl });
+  } catch (err) {
+    res.status(500).json({ message: "Login background upload failed" });
+  }
+});
+
+// Get Latest Login Background (Public)
+app.get("/api/login-background", async (req, res) => {
+  try {
+    const latestBackground = await LoginBackground.findOne().sort({ uploadedAt: -1 });
+    res.json({ imageUrl: latestBackground?.imageUrl || "" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch login background" });
+  }
+});
+
+// ------------------- Server Startup -------------------
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));

@@ -1,19 +1,34 @@
 import React, { useEffect, useState } from "react";
+import { Button, Table } from 'react-bootstrap';
+import './Home.css';
 import axios from "axios";
-import { Link } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Modal from 'react-bootstrap/Modal';
+import { Link } from "react-router-dom"; // ADDED
+import About from "../pages/About";
+import MissionVision from "../pages/MissionVision";
+import OurValues from "../pages/OurValues";
+import Contact from "../pages/Contact";
+import ProductCard from "../components/ProductCard";
+import languageText from "../utils/languageText";
 
-function Home() {
+function Home({ isAdmin }) { // RECEIVE isAdmin
   const [products, setProducts] = useState([]);
   const [theme, setTheme] = useState("light");
   const [language, setLanguage] = useState("en");
   const [heroImage, setHeroImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false); // ADDED
+
+  const fetchProducts = () => {
+    axios.get("/api/products")
+      .then((res) => setProducts(res.data))
+      .catch((err) => console.error("Error fetching products:", err));
+  };
 
   useEffect(() => {
-    axios.get("/api/products").then((res) => setProducts(res.data));
+    fetchProducts();
     axios.get("/api/hero").then((res) => setHeroImage(res.data?.imageUrl));
   }, []);
 
@@ -30,27 +45,61 @@ function Home() {
     setShowModal(true);
   };
 
+  const handleClose = () => setShowModal(false);
+
+  const navbarText = languageText[language] || {};
+
   return (
     <div className={`home-container ${theme}`}>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      {/* Logout Alert - Slide-in Effect */}
+      {showLogoutAlert && (
+        <div className="alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3 slide-in-alert" role="alert" style={{ zIndex: 9999 }}>
+          Logout Successful!
+        </div>
+      )}
+
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div className="container">
-          <Link className="navbar-brand" to="/">Crosscrate Exim</Link>
+          <a className="navbar-brand" href="#">CROSSCRATE EXIM</a>
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
-              <li className="nav-item"><a className="nav-link" href="#products">Products</a></li>
-              <li className="nav-item"><a className="nav-link" href="#certification">Certification</a></li>
-              <li className="nav-item"><a className="nav-link" href="#about">About</a></li>
-              <li className="nav-item"><a className="nav-link" href="#contact">Contact Us</a></li>
+              <li className="nav-item"><a className="nav-link" href="#">{navbarText.navbar?.home || 'Home'}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#products">{navbarText.navbar?.products || 'Products'}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#about">{navbarText.navbar?.about || 'About'}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#mission">{navbarText.navbar?.mission || 'Mission'}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#values">{navbarText.navbar?.values || 'Values'}</a></li>
+              <li className="nav-item"><a className="nav-link" href="#contact">{navbarText.navbar?.contact || 'Contact'}</a></li>
             </ul>
             <div className="d-flex">
               <select className="form-select form-select-sm me-2" value={language} onChange={handleLanguageChange}>
-                <option value="en">EN</option>
-                <option value="ta">TA</option>
-                <option value="hi">HI</option>
+                <option value="en">English</option>
+                <option value="ta">Tamil</option>
+                <option value="hi">Hindi</option>
               </select>
-              <button className="btn btn-outline-light btn-sm me-2" onClick={toggleTheme}>Toggle Theme</button>
-              <Link to="/admin" className="btn btn-success btn-sm">Login</Link>
+              <button className="btn btn-outline-light btn-sm me-2" onClick={toggleTheme}>Theme</button>
+              {isAdmin ? (
+                <>
+                  <Link to="/dashboard" className="btn btn-warning btn-sm me-2">
+                    Admin Panel
+                  </Link>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => {
+                      localStorage.removeItem("token");
+                      setShowLogoutAlert(true); // Show logout success alert
+                      setTimeout(() => {
+                        window.location.href = "/"; // Redirect after 1.5s
+                      }, 1500);
+                    }}
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <a href="/admin" className="btn btn-success btn-sm">
+                  {navbarText.navbar?.login || 'Login'}
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -58,38 +107,37 @@ function Home() {
 
       <div className="hero-section d-flex align-items-center justify-content-center" style={{ height: '300px', backgroundImage: `url(${heroImage})`, backgroundSize: 'cover' }}>
         <div className="text-center text-white bg-dark bg-opacity-50 p-3 rounded">
-          <h1>Welcome to Crosscrate Exim</h1>
-          <p>Organic and High-Quality Fertilizers for Healthy Farming</p>
+          <h1>{navbarText.welcome || 'Welcome to Crosscrate Exim'}</h1>
+          <p>{navbarText.tagline || 'Your one-stop solution for all fertilizers'}</p>
         </div>
       </div>
 
       <div className="container mt-5" id="products">
-        <h2 className="text-center mb-4">Our Products</h2>
+        <h2 className="text-center mb-4">{navbarText.navbar?.products || 'Products'}</h2>
         <div className="row">
           {products.map((product) => (
-            <div className="col-md-4 mb-3" key={product._id}>
-              <div className="card h-100" onClick={() => openModal(product)} style={{ cursor: 'pointer' }}>
-                {product.imageUrl && <img src={product.imageUrl} alt={product.name} className="card-img-top" style={{ height: '200px', objectFit: 'cover' }} />}
-                <div className="card-body">
-                  <h5 className="card-title">{product.name}</h5>
-                  <p className="card-text">{product.description}</p>
-                  <p className="text-success">Price: ₹{product.price}</p>
-                </div>
-              </div>
-            </div>
+            <ProductCard key={product._id} product={product} onClick={openModal} />
           ))}
         </div>
       </div>
 
       <div className="container mt-5" id="about">
-        <h3>About Us</h3>
-        <p>We are committed to delivering sustainable and organic fertilizers that improve crop yield and protect the environment.</p>
-        <h3 className="mt-4" id="contact">Contact Us</h3>
-        <p>Email: info@fertipro.com</p>
-        <p>Phone: +91 98765 43210</p>
+        <About language={language} />
       </div>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+      <div className="container mt-5" id="mission">
+        <MissionVision language={language} />
+      </div>
+
+      <div className="container mt-5" id="values">
+        <OurValues language={language} />
+      </div>
+
+      <div className="container mt-5" id="contact">
+        <Contact language={language} />
+      </div>
+
+      <Modal show={showModal} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>{selectedProduct?.name}</Modal.Title>
         </Modal.Header>
@@ -98,6 +146,11 @@ function Home() {
           <p><strong>Description:</strong> {selectedProduct?.description}</p>
           <p><strong>Price:</strong> ₹{selectedProduct?.price}</p>
         </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

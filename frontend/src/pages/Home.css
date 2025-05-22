@@ -4,3 +4,22 @@
   background-size: cover;
   background-position: center;
 }
+
+.text-truncate-description {
+  height: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+}
+
+/* Slide-in alert animation */
+@keyframes slideInAlert {
+  0% { right: -100%; opacity: 0; }
+  100% { right: 0; opacity: 1; }
+}
+
+.slide-in-alert {
+  animation: slideInAlert 0.5s ease-in-out;
+}
