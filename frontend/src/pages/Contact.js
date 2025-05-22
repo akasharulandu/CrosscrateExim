@@ -50,7 +50,7 @@ function Contact() {
       {successMessage && <p className="text-success">{successMessage}</p>}
       {errorMessage && <p className="text-danger">{errorMessage}</p>}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{width:'30%'}}>
         <input 
           type="text" 
           name="name"

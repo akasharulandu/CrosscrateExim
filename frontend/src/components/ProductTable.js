@@ -13,7 +13,7 @@ const ProductTable = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [dimensions, setDimensions] = useState([]);
-
+  console.log('imageURllllllllllllllllllll',fileList);
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -23,6 +23,7 @@ const ProductTable = () => {
     try {
       const response = await axios.get('/api/products');
       setProducts(response.data);
+      console.log("responseeeeeeeeeeeeeeeeeee",response.data);
     } catch (error) {
       console.error(error);
       message.error('Failed to fetch products');
@@ -40,6 +41,7 @@ const ProductTable = () => {
   };
 
   const handleEditProduct = (record) => {
+    console.log("recordafter add00000000000000",record);
     form.setFieldsValue(record);
     setDimensions(record.dimensions || []);
     setFileList(
@@ -79,10 +81,11 @@ const ProductTable = () => {
       formData.append('price', values.price);
       formData.append('description', values.description);
       formData.append('dimensions', JSON.stringify(dimensions));
+      // if (photo) formData.append("photo", photo);
 
-      if (fileList[0]?.originFileObj) {
-        formData.append('photo', fileList[0].originFileObj);
-      }
+     
+        formData.append('photo', fileList);
+      
 
       const config = {
         headers: {
@@ -95,13 +98,13 @@ const ProductTable = () => {
         await axios.put(`/api/products/${editingProduct._id}`, formData, config);
         message.success('Product updated successfully');
       } else {
+        console.log("post Api formData-----------------",formData)
         await axios.post('/api/products/upload', formData, config);
         message.success('Product added successfully');
       }
 
       setModalOpen(false);
-      fetchProducts();
-    } catch (error) {
+      fetchProducts();    } catch (error) {
       console.error(error);
       message.error('Failed to save product');
     }
@@ -140,9 +143,11 @@ const ProductTable = () => {
       setFileList([file]);
       return false;
     },
+   
     fileList,
     listType: 'picture',
     maxCount: 1,
+    
   };
 
   const columns = [

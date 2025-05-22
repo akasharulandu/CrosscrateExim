@@ -15,6 +15,7 @@ function AdminDashboard() {
   const [editData, setEditData] = useState({ name: "", description: "", price: "", weight: "", expansion: "", dimension: "", compositions: "" });
   const [heroPhoto, setHeroPhoto] = useState(null);
   const [heroPreview, setHeroPreview] = useState(null);
+  console.log('imageURllllllllllllllllllll working',photo);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -33,6 +34,7 @@ function AdminDashboard() {
         }
       });
       setProducts(res.data);
+      console.log("responseeeeeeeeeeeeeeeeeee",res.data);
     } catch (err) {
       console.error("Fetching products failed:", err);
     }
@@ -52,6 +54,7 @@ function AdminDashboard() {
     if (photo) formData.append("photo", photo);
 
     try {
+      console.log("post Api formData-----------------",formData)
       await axios.post("/api/products/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
