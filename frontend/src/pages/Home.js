@@ -61,13 +61,24 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
       )}
 
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div className="container">
+        <div className="container" style={{paddingLeft: '5px', paddingRight: '1px', marginLeft: '1px', marginRight: '1px'}}>
 
           <a className="navbar-brand d-flex align-items-center" href="#">
   <img src={logo} alt="Logo" width="70" height="50" className="d-inline-block align-top me"  />
   CROSSCRATE EXIM
 </a>
-          <div className="collapse navbar-collapse">
+<button
+    className="navbar-toggler"
+    type="button"
+    data-bs-toggle="collapse"
+    data-bs-target="#navbarNav"
+    aria-controls="navbarNav"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
+    <span className="navbar-toggler-icon"></span>
+  </button>
+          <div className="collapse navbar-collapse justify-content-between" id="navbarNav">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item"><a className="nav-link" href="#">{navbarText.navbar?.home || 'Home'}</a></li>
               <li className="nav-item"><a className="nav-link" href="#products">{navbarText.navbar?.products || 'Products'}</a></li>
@@ -76,8 +87,9 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
               <li className="nav-item"><a className="nav-link" href="#values">{navbarText.navbar?.values || 'Values'}</a></li>
               <li className="nav-item"><a className="nav-link" href="#contact">{navbarText.navbar?.contact || 'Contact'}</a></li>
             </ul>
-            <div className="d-flex">
-              <select className="form-select form-select-sm me-2" value={language} onChange={handleLanguageChange}>
+            <div className="d-flex align-items-center">
+
+              <select className="form-select form-select-sm me-2" value={language} onChange={handleLanguageChange} style={{ width: 'auto' }}>
                 <option value="en">English</option>
                 <option value="ta">Tamil</option>
                 <option value="hi">Hindi</option>
@@ -89,20 +101,20 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
                     Admin Panel
                   </Link>
                   <button
-                    className="btn btn-danger btn-sm"
+                    className="btn btn-danger btn-sm " 
                     onClick={() => {
                       localStorage.removeItem("token");
                       setShowLogoutAlert(true); // Show logout success alert
                       setTimeout(() => {
                         window.location.href = "/"; // Redirect after 1.5s
                       }, 1500);
-                    }}
+                    }} 
                   >
                     Logout
                   </button>
                 </>
               ) : (
-                <a href="/admin" className="btn btn-success btn-sm">
+                <a href="/admin" className="btn btn-success btn-sm" >
                   {navbarText.navbar?.login || 'Login'}
                 </a>
               )}
