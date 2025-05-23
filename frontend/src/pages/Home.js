@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, Table } from 'react-bootstrap';
+import FloatingLabel from "react-bootstrap";
 import './Home.css';
+import logo from "../assets/logo.png"; // ADDED
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Modal from 'react-bootstrap/Modal';
@@ -60,7 +62,11 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
 
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div className="container">
-          <a className="navbar-brand" href="#">CROSSCRATE EXIM</a>
+
+          <a className="navbar-brand d-flex align-items-center" href="#">
+  <img src={logo} alt="Logo" width="70" height="50" className="d-inline-block align-top me"  />
+  CROSSCRATE EXIM
+</a>
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item"><a className="nav-link" href="#">{navbarText.navbar?.home || 'Home'}</a></li>
