@@ -72,15 +72,16 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-// Multer Setup
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => cb(null, "uploads/"),
-//   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
-// });
-// const upload = multer({ storage });
-const upload = multer({
-  dest: path.join(uploads, 'uploads/'), // folder to store uploads
+// // Multer Setup
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
+const upload = multer({ storage });
+
+// const upload = multer({
+//   dest: path.join(uploads, 'uploads/'), // folder to store uploads
+// });
 
 // ------------------- Routes -------------------
 

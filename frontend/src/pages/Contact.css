@@ -1,0 +1,49 @@
+.contact-section {
+    background: linear-gradient(rgba(32, 33, 33, 0.9), rgba(7, 47, 42, 0.9)),
+                url('E:\Developping\Own Project developing\CrosscrateExim\frontend\public\images\bg-about.jpeg') center/cover no-repeat;
+    border-radius: 20px;
+    color: white;
+     padding: 40px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.contact-section h2,
+.contact-section h4 {
+  color: #fca311;
+}
+
+.contact-section p {
+  font-size: 1rem;
+}
+
+.contact-section strong {
+  color: #fca311;
+}
+
+.contact-section form {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 20px;
+}
+
+.contact-section input,
+.contact-section textarea {
+  background-color: #ffffff;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+.contact-section .form-control:focus {
+  border-color: #fca311;
+  box-shadow: 0 0 0 0.2rem rgba(252, 163, 17, 0.25);
+}
+
+.contact-section .btn-primary {
+  background-color: #fca311;
+  border: none;
+  font-weight: bold;
+}
+
+.contact-section .btn-primary:hover {
+  background-color: #e0950f;
+}

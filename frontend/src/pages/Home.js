@@ -61,10 +61,10 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
       )}
 
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div className="container" style={{paddingLeft: '5px', paddingRight: '1px', marginLeft: '1px', marginRight: '1px'}}>
+        <div className="container-fluid px-3">
 
           <a className="navbar-brand d-flex align-items-center" href="#">
-  <img src={logo} alt="Logo" width="70" height="50" className="d-inline-block align-top me"  />
+  <img src={logo} alt="Logo" width="70" height="50" className="d-inline-block align-top me-2"  />
   CROSSCRATE EXIM
 </a>
 <button
@@ -78,8 +78,8 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
   >
     <span className="navbar-toggler-icon"></span>
   </button>
-          <div className="collapse navbar-collapse justify-content-between" id="navbarNav">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+          <div className="collapse navbar-collapse" id="navbarNav">
+            <ul className="navbar-nav me-auto mt-2 mt-lg-0">
               <li className="nav-item"><a className="nav-link" href="#">{navbarText.navbar?.home || 'Home'}</a></li>
               <li className="nav-item"><a className="nav-link" href="#products">{navbarText.navbar?.products || 'Products'}</a></li>
               <li className="nav-item"><a className="nav-link" href="#about">{navbarText.navbar?.about || 'About'}</a></li>
@@ -87,7 +87,7 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
               <li className="nav-item"><a className="nav-link" href="#values">{navbarText.navbar?.values || 'Values'}</a></li>
               <li className="nav-item"><a className="nav-link" href="#contact">{navbarText.navbar?.contact || 'Contact'}</a></li>
             </ul>
-            <div className="d-flex align-items-center">
+            <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
 
               <select className="form-select form-select-sm me-2" value={language} onChange={handleLanguageChange} style={{ width: 'auto' }}>
                 <option value="en">English</option>

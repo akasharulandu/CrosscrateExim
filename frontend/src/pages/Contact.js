@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './Contact.css'; // Im
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -38,8 +39,8 @@ function Contact() {
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Contact Us</h2>
+    <div className="container contact-section mt-5">
+      <h2 className="text-center  text-white fw-bold">Contact Us</h2> <br/>
       <p><strong>Email:</strong> crosscrateexim@gmail.com</p>
       <p><strong>Phone:</strong> +91 94955 22449</p>
       <p><strong>Address:</strong> Crosscrate International Exim Private Limited, Al Ameen, Parimanam, Muttom-Allepey, Kerala, India- 690511</p>
@@ -78,7 +79,7 @@ function Contact() {
           value={formData.message}
           onChange={handleChange}
         ></textarea>
-        <button type="submit" className="btn btn-primary">Submit</button>
+        <button type="submit" className="btn btn-primary">Submit</button> <br/>
       </form>
     </div>
   );

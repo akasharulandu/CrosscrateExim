@@ -8,14 +8,9 @@ import ProductTable from "../components/ProductTable";
 
 function AdminDashboard() {
   const navigate = useNavigate();
-  const [products, setProducts] = useState([]);
-  const [newProduct, setNewProduct] = useState({ name: "", description: "", price: "", weight: "", expansion: "", dimension: "", compositions: "" });
-  const [photo, setPhoto] = useState(null);
-  const [editingId, setEditingId] = useState(null);
-  const [editData, setEditData] = useState({ name: "", description: "", price: "", weight: "", expansion: "", dimension: "", compositions: "" });
   const [heroPhoto, setHeroPhoto] = useState(null);
   const [heroPreview, setHeroPreview] = useState(null);
-  console.log('imageURllllllllllllllllllll working',photo);
+  
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -40,36 +35,7 @@ function AdminDashboard() {
     }
   };
 
-  const addProduct = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("name", newProduct.name);
-    formData.append("description", newProduct.description);
-    formData.append("price", newProduct.price);
-    formData.append("item", newProduct.item);
-    formData.append("weight", newProduct.weight);
-    formData.append("expansion", newProduct.expansion);
-    formData.append("dimension", newProduct.dimension);
-    formData.append("compositions", newProduct.compositions);
-    if (photo) formData.append("photo", photo);
 
-    try {
-      console.log("post Api formData-----------------",formData)
-      await axios.post("/api/products/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      });
-      alert("Product uploaded!");
-      setNewProduct({ name: "", description: "", price: "", item: "", weight: "", expansion: "", dimension: "", compositions: "" });
-      setPhoto(null);
-      fetchProducts();
-    } catch (err) {
-      console.error("Product upload failed:", err);
-      alert("Product upload failed");
-    }
-  };
 
   const uploadHeroImage = async (e) => {
     e.preventDefault();
@@ -92,46 +58,19 @@ function AdminDashboard() {
     }
   };
 
-  const deleteProduct = async (id) => {
-    try {
-      await axios.delete(`/api/products/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      });
-      fetchProducts();
-    } catch (err) {
-      console.error("Delete product failed:", err);
-    }
-  };
+  // const deleteProduct = async (id) => {
+  //   try {
+  //     await axios.delete(`/api/products/${id}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("token")}`
+  //       }
+  //     });
+  //     fetchProducts();
+  //   } catch (err) {
+  //     console.error("Delete product failed:", err);
+  //   }
+  // };
 
-  const startEdit = (product) => {
-    setEditingId(product._id);
-    setEditData({
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      item: product.item,
-      weight: product.weight,
-      expansion: product.expansion,
-      dimension: product.dimension,
-      compositions: product.compositions
-    });
-  };
-
-  const saveEdit = async (id) => {
-    try {
-      await axios.put(`/api/products/${id}`, editData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
-      });
-      setEditingId(null);
-      fetchProducts();
-    } catch (err) {
-      console.error("Edit product failed:", err);
-    }
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -143,47 +82,18 @@ function AdminDashboard() {
   };
 
   return (
+    
+
+    // {/*Admin Dashboard Layout*/}
     <div className="container mt-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Admin Dashboard</h2>
+        <h2 className="fw-bold">Admin Dashboard</h2>
         <div>
           <button className="btn btn-secondary me-2" onClick={goBackToHome}>Back to Home</button>
           <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
         </div>
       </div>
 
-      {/* Add New Product */}
-      <form onSubmit={addProduct} className="w-50 mb-5">
-        <input
-          type="text"
-          placeholder="Product Name"
-          className="form-control mb-2"
-          value={newProduct.name}
-          onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-          required
-        />
-        <textarea
-          className="form-control mb-2"
-          rows={6}
-          placeholder="Product Description"
-          value={newProduct.description}
-          onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-        />
-        <input
-          type="number"
-          placeholder="Price"
-          className="form-control mb-2"
-          value={newProduct.price}
-          onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-          required
-        />
-        <input
-          type="file"
-          className="form-control mb-2"
-          onChange={(e) => setPhoto(e.target.files[0])}
-        />
-        <button type="submit" className="btn btn-success">Add Product</button>
-      </form>
 
       {/* Hero Image Upload */}
       <div className="w-50 mb-5">
@@ -208,10 +118,10 @@ function AdminDashboard() {
           <button type="submit" className="btn btn-primary">Upload Hero Image</button>
         </form>
       </div>
-
+ <div>
       <ProductTable />
 
-      <h4>Current Products</h4>
+      {/* <h4>Current Products</h4>
       <div className="row">
         {products.map((product) => (
           <div key={product._id} className="col-md-4 mb-4">
@@ -283,6 +193,8 @@ function AdminDashboard() {
           </div>
         ))}
       </div>
+    </div> */}
+    </div>
     </div>
   );
 }

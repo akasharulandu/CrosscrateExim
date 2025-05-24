@@ -16,8 +16,8 @@ function Navbar({ theme, toggleTheme, language, setLanguage, isAdmin, setIsAdmin
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
       <Link className="navbar-brand" to="/">Crosscrate Exim</Link>
-      <div className="collapse navbar-collapse">
-        <ul className="navbar-nav me-auto">
+      <div className="collapse navbar-collapse" id="navbarNav">
+        <ul className="navbar-nav me-auto mt-2 mt-lg-0">
           <li className="nav-item"><Link className="nav-link" to="/">Home</Link></li>
           {/* <li className="nav-item"><Link className="nav-link" to="/products">Products</Link></li>
           <li className="nav-item"><Link className="nav-link" to="/about">About</Link></li>
@@ -28,7 +28,7 @@ function Navbar({ theme, toggleTheme, language, setLanguage, isAdmin, setIsAdmin
              <li className="nav-item"><Link className="nav-link" to="/values">Our Values</Link></li>
              <li className="nav-item"><Link className="nav-link" to="/contact">Contact Us</Link></li>
         </ul>
-        <div className="d-flex align-items-center">
+        <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
           <label className="text-white me-2">Theme</label>
           <div className="form-check form-switch text-white me-3">
             <input className="form-check-input" type="checkbox" onChange={toggleTheme} checked={theme === "dark"} />
