@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Modal, Button, Form, Input, Upload, message, Spin } from 'antd';
-import { PlusOutlined, UploadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Modal, Button, Form, Input, Upload, message, Spin, Checkbox } from 'antd';
+import { PlusOutlined, UploadOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 const { TextArea } = Input;
@@ -14,6 +14,9 @@ const ProductTable = () => {
   const [photo, setPhoto] = useState(null);
   const [fileList, setFileList] = useState([]);
   const [dimensions, setDimensions] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(4); // show only 4 products per page
+
 
   useEffect(() => {
     fetchProducts();
@@ -166,11 +169,85 @@ const ProductTable = () => {
       render: (text) =>
         text ? <img src={text} alt="product" style={{ width: 80, height: 80, objectFit: 'cover' }} /> : 'No Image',
     },
+
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-    },
+  title: 'Name',
+  dataIndex: 'name',
+  key: 'name',
+  filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => {
+    const uniqueNames = Array.from(new Set(products.map(p => p.name)));
+    const [searchText, setSearchText] = React.useState('');
+
+    const filteredNames = uniqueNames.filter(name =>
+      name.toLowerCase().includes(searchText.toLowerCase())
+    );
+
+    const onCheckboxChange = (e, name) => {
+      const checked = e.target.checked;
+      if (checked) {
+        setSelectedKeys([...selectedKeys, name]);
+      } else {
+        setSelectedKeys(selectedKeys.filter(k => k !== name));
+      }
+    };
+
+    const onSelectAllChange = (e) => {
+      const checked = e.target.checked;
+      if (checked) {
+        const allFiltered = filteredNames;
+        setSelectedKeys(Array.from(new Set([...selectedKeys, ...allFiltered])));
+      } else {
+        setSelectedKeys(selectedKeys.filter(k => !filteredNames.includes(k)));
+      }
+    };
+
+    const allSelected = filteredNames.every(name => selectedKeys.includes(name));
+    const someSelected = filteredNames.some(name => selectedKeys.includes(name));
+
+    return (
+      <div style={{ padding: 8 }}>
+        <Input
+          placeholder="Search Name"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ marginBottom: 8, display: 'block' }}
+        />
+        <Checkbox
+          indeterminate={!allSelected && someSelected}
+          checked={allSelected}
+          onChange={onSelectAllChange}
+          style={{ marginBottom: 8 }}
+        >
+          Select All
+        </Checkbox>
+        <div style={{ maxHeight: 200, overflowY: 'auto' }}>
+          {filteredNames.map(name => (
+            <div key={name}>
+              <Checkbox
+                checked={selectedKeys.includes(name)}
+                onChange={(e) => onCheckboxChange(e, name)}
+              >
+                {name}
+              </Checkbox>
+            </div>
+          ))}
+        </div>
+        <Button
+          type="primary"
+          onClick={() => confirm()}
+          size="small"
+          style={{ marginTop: 8 }}
+        >
+          Apply
+        </Button>
+      </div>
+    );
+  },
+  filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+  onFilter: (value, record) => record.name === value,
+},
+
+
     {
       title: 'Price',
       dataIndex: 'price',
@@ -217,7 +294,12 @@ const ProductTable = () => {
           <Spin size="large" />
         </div>
       ) : (
-        <Table columns={columns} dataSource={products} rowKey="_id" />
+        <Table columns={columns} dataSource={products} rowKey="_id" pagination={{
+    current: currentPage,
+    pageSize: pageSize,
+    onChange: (page) => setCurrentPage(page),
+  }} />
+
       )}
 
       <Modal

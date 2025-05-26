@@ -63,8 +63,8 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div className="container-fluid px-3">
 
-          <a className="navbar-brand d-flex align-items-center" href="#">
-  <img src={logo} alt="Logo" width="70" height="50" className="d-inline-block align-top me-2"  />
+          <a className="navbar-brand d-flex align-items-center fw-bold" sty href="#" >
+  <img src={logo} alt="Logo" width="70" height="50" className="d-inline-block align-top me-2" />
   CROSSCRATE EXIM
 </a>
 <button
