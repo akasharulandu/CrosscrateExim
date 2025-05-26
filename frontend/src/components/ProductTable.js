@@ -174,7 +174,7 @@ const ProductTable = () => {
   title: 'Name',
   dataIndex: 'name',
   key: 'name',
-  filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => {
+  filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => {
     const uniqueNames = Array.from(new Set(products.map(p => p.name)));
     const [searchText, setSearchText] = React.useState('');
 
@@ -236,10 +236,21 @@ const ProductTable = () => {
           type="primary"
           onClick={() => confirm()}
           size="small"
-          style={{ marginTop: 8 }}
+          style={{ width: 90, marginRight: 8 }}
         >
           Apply
         </Button>
+         <Button
+  onClick={() => {
+    setSelectedKeys([]);        // Clear selected filter values
+    setSearchText('');          // Clear search input
+  }}
+  size="small"
+  style={{ width: 90 }}
+>
+  Reset
+</Button>
+
       </div>
     );
   },
