@@ -72,9 +72,10 @@ function AdminDashboard() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
-  };
+  localStorage.removeItem("token");
+  navigate("/", { state: { loggedOut: true } }); // Pass state on logout
+};
+
 
   const goBackToHome = () => {
     navigate("/");
