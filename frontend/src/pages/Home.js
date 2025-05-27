@@ -57,7 +57,7 @@ function Home({ isAdmin }) {
       className={`home-container ${theme}`}
       style={{
         background: theme === "light"
-          ? "linear-gradient(135deg,rgb(197, 245, 237) 0%,rgb(254, 201, 234) 100%)" // warm peach gradient for light
+          ? "linear-gradient(135deg,rgb(220, 249, 244) 0%,rgb(254, 201, 234) 100%)" // warm peach gradient for light
           : "linear-gradient(135deg,rgb(48, 48, 49) 0%,rgb(35, 35, 35) 100%)", // cool blue gradient for dark
         minHeight: "100vh",
         transition: "background 0.5s ease",
@@ -120,9 +120,14 @@ function Home({ isAdmin }) {
         <OurValues language={language} />
       </div>
 
-      <div className="container mt-5" id="contact">
-        <Contact language={language} />
-      </div>
+      <div
+  className="container mt-5"
+  id="contact"
+  style={{ paddingBottom: "3rem" }}
+>
+  <Contact language={language} />
+</div>
+
 
       <Modal show={showModal} onHide={handleClose} centered>
         <Modal.Header closeButton>
