@@ -1,10 +1,13 @@
+/* Hero Section */
 .hero-section {
   height: 60vh;
-  background-image: url('https://unsplash.com/s/photos/farm%2C-organic');
+  background-image: linear-gradient(rgba(0, 100, 0, 0.4), rgba(255, 255, 255, 0.2)),
+                    url('https://images.unsplash.com/photo-1602526211544-8d925ff8d377');
   background-size: cover;
   background-position: center;
 }
 
+/* Truncate Description */
 .text-truncate-description {
   height: 100px;
   overflow: hidden;
@@ -19,25 +22,22 @@
   0% { right: -100%; opacity: 0; }
   100% { right: 0; opacity: 1; }
 }
-
 .slide-in-alert {
   animation: slideInAlert 0.5s ease-in-out;
 }
 
+/* Home container */
 .home-container.light {
-  background-color:#f8faf9c4; /* Light gray */
+  background-color: #f8faf9c4;
   min-height: 100vh;
 }
 
-
-/* #f8f9fa; Light gray */
-
+/* Navbar links */
 .custom-nav .nav-link {
   position: relative;
   color: #ffffff !important;
   transition: color 0.3s ease, transform 0.3s ease;
 }
-
 .custom-nav .nav-link::after {
   content: "";
   position: absolute;
@@ -45,28 +45,39 @@
   height: 2px;
   left: 0;
   bottom: 0;
-  background-color: #ffc107; /* Stylish yellow underline */
+  background-color: #ffc107;
   transition: width 0.3s;
 }
-
 .custom-nav .nav-link:hover {
-  color: #ffc107 !important; /* Change link color on hover */
-  transform: translateY(-2px); /* Subtle lift effect */
+  color: #ffc107 !important;
+  transform: translateY(-2px);
 }
-
 .custom-nav .nav-link:hover::after {
-  width: 100%; /* Animate underline on hover */
+  width: 100%;
 }
 
+/* Modal styling */
 .product-detail-modal .modal-content {
-  background-color: #fff;
+  background: linear-gradient(135deg, #ffffff, #f1f8e9);
   border-radius: 1rem;
   padding: 1.5rem;
-  max-width: 850px;
-  box-shadow: 0 5px 20px rgba(177, 246, 248, 0.2);
+  max-width: 90vw;
+  width: 100%;
+  box-shadow: 0 5px 20px rgba(129, 239, 184, 0.3);
+  overflow-y: auto;
+  max-height: 90vh;
 }
 
-/* For fancy scrollbars */
+/* Product title */
+.product-detail-modal .modal-title {
+  color: #2e7d32;
+  font-weight: 600;
+  text-align: center;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px #e0e0e0;
+}
+
+/* Fancy scrollbars */
 .fancy-scrollbar::-webkit-scrollbar {
   width: 10px;
 }
@@ -81,11 +92,10 @@
   background: #555;
 }
 
-/* Modal animation */
+/* Modal fade animation */
 .modal-fade .modal-dialog {
   animation: fadeInUp 0.5s ease-out;
 }
-
 @keyframes fadeInUp {
   from {
     transform: translateY(30px);
@@ -97,4 +107,27 @@
   }
 }
 
+/* Carousel image in modal */
+.carousel .slide img {
+  max-height: 400px;
+  object-fit: contain;
+  border-radius: 10px;
+  margin: auto;
+}
 
+/* Carousel navigation buttons */
+.carousel.carousel-slider .control-arrow {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+}
+
+/* Product tag or rating */
+.product-tag {
+  display: inline-block;
+  background-color: #dcedc8;
+  color: #33691e;
+  padding: 3px 10px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  margin: 2px;
+}

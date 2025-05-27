@@ -158,7 +158,13 @@ function Home({ isAdmin }) {
         className="fade modal-fade"
         backdrop="static"
       >
-        <Modal.Header closeButton style={{ background: "#212529", color: "white" }}>
+        <Modal.Header closeButton style={{
+  backgroundImage: "linear-gradient(90deg, rgb(11 146 128), rgb(222 182 198)",
+  color: "white",
+  borderTopLeftRadius: "1rem",
+  borderTopRightRadius: "1rem"
+}}
+>
           <Modal.Title>{selectedProduct?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body
@@ -217,7 +223,7 @@ function Home({ isAdmin }) {
             </div>
           </div>
         </Modal.Body>
-        <Modal.Footer className="justify-content-between">
+        <Modal.Footer className="justify-content-between" style={{backgroundColor: "#f8f9fa"}}>
           <Button variant="secondary" onClick={handlePrevious} disabled={currentIndex === 0}>
             ◀ Previous
           </Button>
