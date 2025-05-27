@@ -53,7 +53,16 @@ function Home({ isAdmin }) {
   const navbarText = languageText[language] || {};
 
   return (
-    <div className={`home-container ${theme}`}>
+    <div
+      className={`home-container ${theme}`}
+      style={{
+        background: theme === "light"
+          ? "linear-gradient(135deg,rgb(197, 245, 237) 0%,rgb(254, 201, 234) 100%)" // warm peach gradient for light
+          : "linear-gradient(135deg,rgb(48, 48, 49) 0%,rgb(35, 35, 35) 100%)", // cool blue gradient for dark
+        minHeight: "100vh",
+        transition: "background 0.5s ease",
+      }}
+    >
       {showLogoutAlert && (
         <div
           className="alert alert-success alert-dismissible fade show position-fixed end-0 m-3 slide-in-alert"

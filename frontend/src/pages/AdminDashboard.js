@@ -24,7 +24,7 @@ function AdminDashboard() {
       navigate("/login");
     } else {
       fetchProducts();
-      const timeout = setTimeout(() => setShowWelcome(false), 1500);
+      const timeout = setTimeout(() => setShowWelcome(false), 800);
       return () => clearTimeout(timeout);
     }
   }, [navigate]);

@@ -1,6 +1,6 @@
-// src/components/Navbar.js
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaSun, FaMoon } from "react-icons/fa";
 import logo from "../assets/logo.png";
 import languageText from "../utils/languageText";
 
@@ -10,13 +10,6 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
   const onHomePage = location.pathname === "/";
 
   const navbarText = languageText[language] || {};
-
-  const scrollToSection = (id) => {
-    const section = document.getElementById(id);
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
-  };
 
   const handleHomeClick = () => {
     if (onHomePage) {
@@ -94,19 +87,49 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
 
           <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
             <select
-              className="form-select form-select-sm me-2"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              style={{ width: "auto" }}
-            >
-              <option value="en">English</option>
-              <option value="ta">Tamil</option>
-              <option value="hi">Hindi</option>
-            </select>
+  className="form-select form-select-sm me-2"
+  value={language}
+  onChange={(e) => setLanguage(e.target.value)}
+  style={{
+    width: "auto",
+    backgroundColor: theme === "dark" ? '#343a40' : '#fff', // dark grey bg on dark theme, white on light
+    color: theme === "dark" ? '#fff' : '#000',            // white text on dark, black on light
+    borderColor: theme === "dark" ? '#6c757d' : '#ced4da', // lighter border on dark
+  }}
+>
+  <option value="en">English</option>
+  <option value="ta">Tamil</option>
+  <option value="hi">Hindi</option>
+</select>
 
-            <button className="btn btn-outline-light btn-sm me-2" onClick={toggleTheme}>
-              Theme
-            </button>
+
+            {/* Theme toggle with sun/moon icon */}
+            <button
+  onClick={toggleTheme}
+  title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+  style={{
+    backgroundColor: theme === "dark" ? '#ffc107' : '#343a40', // bright yellow on dark theme, dark grey on light
+    color: theme === "dark" ? '#343a40' : '#fff',               // dark text on yellow bg, white text on dark bg
+    border: 'none',
+    padding: '5px 10px',
+    fontSize: '14px',
+    borderRadius: '4px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginRight: '0.5rem',
+    cursor: 'pointer',
+    boxShadow: theme === "dark" ? '0 0 8px #ffc107aa' : 'none',
+    transition: 'background-color 0.3s ease, color 0.3s ease',
+  }}
+>
+  {theme === "dark" ? <FaSun /> : <FaMoon />}
+  <span style={{ display: window.innerWidth >= 576 ? 'inline' : 'none' }}>
+    {theme === "dark" ? "Light" : "Dark"}
+  </span>
+</button>
+
+
 
             {isAdmin ? (
               <>
