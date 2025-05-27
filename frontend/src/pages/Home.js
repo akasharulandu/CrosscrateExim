@@ -55,18 +55,28 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
     <div className={`home-container ${theme}`}>
       {/* Logout Alert - Slide-in Effect */}
       {showLogoutAlert && (
-        <div className="alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3 slide-in-alert" role="alert" style={{ zIndex: 9999 }}>
-          Logout Successful!
-        </div>
+        <div
+  className="alert alert-success alert-dismissible fade show position-fixed end-0 m-3 slide-in-alert"
+  role="alert"
+  style={{ zIndex: 9999, top: "70px" }}
+>
+  Logout Successful!
+</div>
+
       )}
 
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+     <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top rounded-bottom">
+
         <div className="container-fluid px-3">
 
-          <a className="navbar-brand d-flex align-items-center fw-bold" sty href="#" >
-  <img src={logo} alt="Logo" width="70" height="50" className="d-inline-block align-top me-2" />
-  CROSSCRATE EXIM
+          <a className="navbar-brand d-flex align-items-center" href="#">
+  <img src={logo} alt="Logo" width="70" height="50" className="d-inline-block align-top" />
+  <span className="brand-text">
+    CROSSCRATE <span className="highlight">EXIM</span>
+  </span>
 </a>
+
+
 <button
     className="navbar-toggler"
     type="button"
@@ -79,7 +89,7 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
     <span className="navbar-toggler-icon"></span>
   </button>
           <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav me-auto mt-2 mt-lg-0">
+            <ul className="navbar-nav me-auto mt-2 mt-lg-0 custom-nav">
               <li className="nav-item"><a className="nav-link" href="#">{navbarText.navbar?.home || 'Home'}</a></li>
               <li className="nav-item"><a className="nav-link" href="#products">{navbarText.navbar?.products || 'Products'}</a></li>
               <li className="nav-item"><a className="nav-link" href="#about">{navbarText.navbar?.about || 'About'}</a></li>
@@ -131,7 +141,7 @@ function Home({ isAdmin }) { // RECEIVE isAdmin
       </div>
 
       <div className="container mt-5" id="products">
-        <h2 className="text-center mb-4">{navbarText.navbar?.products || 'Products'}</h2>
+        <h2 className="text-center mb-4 fw-bold">{navbarText.navbar?.products || 'Products'}</h2>
         <div className="row">
           {products.map((product) => (
             <ProductCard key={product._id} product={product} onClick={openModal} />

@@ -170,6 +170,8 @@ const ProductTable = () => {
         text ? <img src={text} alt="product" style={{ width: 80, height: 80, objectFit: 'cover' }} /> : 'No Image',
     },
 
+    {/* Column title "Name" and filter functionality */},
+
     {
   title: 'Name',
   dataIndex: 'name',

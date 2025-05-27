@@ -23,3 +23,37 @@
 .slide-in-alert {
   animation: slideInAlert 0.5s ease-in-out;
 }
+
+.home-container.light {
+  background-color:#f8f9fa; /* Light gray */
+  min-height: 100vh;
+}
+
+
+/* #f8f9fa; Light gray */
+
+.custom-nav .nav-link {
+  position: relative;
+  color: #ffffff !important;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.custom-nav .nav-link::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  left: 0;
+  bottom: 0;
+  background-color: #ffc107; /* Stylish yellow underline */
+  transition: width 0.3s;
+}
+
+.custom-nav .nav-link:hover {
+  color: #ffc107 !important; /* Change link color on hover */
+  transform: translateY(-2px); /* Subtle lift effect */
+}
+
+.custom-nav .nav-link:hover::after {
+  width: 100%; /* Animate underline on hover */
+}

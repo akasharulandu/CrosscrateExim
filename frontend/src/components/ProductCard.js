@@ -9,17 +9,20 @@ const ProductCard = ({ product, onClick }) => {
   return (
     <div className="col-md-4 mb-3">
       <div 
-        className="card h-100 hover-card" 
-        onClick={() => onClick(product)} 
-        style={{ cursor: 'pointer' }}
-      >
+  className="card h-100 hover-card shadow-sm" 
+  onClick={() => onClick(product)} 
+  style={{ cursor: 'pointer', border: '1px solid #dee2e6' }}
+>
+
         {product.imageUrl && (
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="card-img-top"
-            style={{ height: '200px', objectFit: 'cover' }}
-          />
+  <div style={{ borderBottom: '2px solid #ccc' }}>
+    <img
+      src={product.imageUrl}
+      alt={product.name}
+      className="card-img-top"
+      style={{ height: '200px', objectFit: 'cover' }}
+    />
+  </div>
         )}
         <div className="card-body text-center">
           <h5 className="card-title">{product.name}</h5>

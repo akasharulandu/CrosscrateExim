@@ -1,28 +1,27 @@
-// routes/productRoutes.js
-
 const express = require('express');
-const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const Product = require('../models/Product');
 
-// Optional: JWT auth middleware (if needed for admin-only routes)
-// const authMiddleware = require('../middleware/auth'); 
+const router = express.Router();
 
-// Multer storage setup for file uploads
+// Optional: JWT auth middleware (for admin routes)
+// const authMiddleware = require('../middleware/auth');
+
+// Setup Multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Ensure the 'uploads' folder exists
+    cb(null, 'uploads/'); // Ensure this folder exists
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
-  },
+  }
 });
 
 const upload = multer({ storage });
 
-// Helper to parse dimensions safely
+// Helper to safely parse dimensions
 const parseDimensions = (dimensions) => {
   try {
     return dimensions ? JSON.parse(dimensions) : [];
@@ -32,26 +31,27 @@ const parseDimensions = (dimensions) => {
   }
 };
 
-// Fetch all products (Public)
+// GET all products (Public)
 router.get('/', async (req, res) => {
   try {
     const products = await Product.find();
     res.json(products);
   } catch (error) {
     console.error('Fetch products error:', error);
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-// Create a new product (Admin only)
-router.post('/', /* authMiddleware, */ upload.single('image'), async (req, res) => {
+// POST create a new product (Admin only)
+// router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
+router.post('/', upload.single('image'), async (req, res) => {
   try {
     const { name, description, price, dimensions } = req.body;
 
     const newProduct = new Product({
       name,
       description,
-      price, // include price if your model supports it
+      price,
       dimensions: parseDimensions(dimensions),
       imageUrl: req.file ? `/uploads/${req.file.filename}` : '',
     });
@@ -64,17 +64,15 @@ router.post('/', /* authMiddleware, */ upload.single('image'), async (req, res) 
   }
 });
 
-// Update a product (Admin only)
-router.put('/:id', /* authMiddleware, */ upload.single('image'), async (req, res) => {
+// PUT update a product (Admin only)
+// router.put('/:id', authMiddleware, upload.single('image'), async (req, res) => {
+router.put('/:id', upload.single('image'), async (req, res) => {
   try {
     const { name, description, price, dimensions } = req.body;
     const product = await Product.findById(req.params.id);
 
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
+    if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    // Update fields
     product.name = name || product.name;
     product.description = description || product.description;
     product.price = price || product.price;
@@ -92,14 +90,13 @@ router.put('/:id', /* authMiddleware, */ upload.single('image'), async (req, res
   }
 });
 
-// Delete a product (Admin only)
-router.delete('/:id', /* authMiddleware, */ async (req, res) => {
+// DELETE a product (Admin only)
+// router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
 
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
+    if (!product) return res.status(404).json({ message: 'Product not found' });
 
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {

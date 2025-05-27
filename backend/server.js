@@ -72,16 +72,12 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-// // Multer Setup
+// Multer Setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 const upload = multer({ storage });
-
-// const upload = multer({
-//   dest: path.join(uploads, 'uploads/'), // folder to store uploads
-// });
 
 // ------------------- Routes -------------------
 
@@ -109,7 +105,8 @@ app.get("/api/products", async (req, res) => {
 app.post("/api/products/upload", authMiddleware, upload.single("photo"), async (req, res) => {
   try {
     const { name, description, price, dimensions } = req.body;
-    const imageUrl = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : "";
+    const imageUrl = `/uploads/${req.file.filename}`;
+
 
     const newProduct = new Product({
       name,
@@ -147,7 +144,7 @@ app.put("/api/products/:id", authMiddleware, upload.single("photo"), async (req,
       dimensions: dimensions ? JSON.parse(dimensions) : [],
     };
     if (req.file) {
-      updateData.imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+      updateData.imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
@@ -170,7 +167,7 @@ app.get("/api/hero", async (req, res) => {
 // Upload Hero Image (Admin)
 app.post("/api/hero/upload", authMiddleware, upload.single("photo"), async (req, res) => {
   try {
-    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
     const newHeroImage = new HeroImage({ imageUrl });
     await newHeroImage.save();
     res.json(newHeroImage);
@@ -182,7 +179,7 @@ app.post("/api/hero/upload", authMiddleware, upload.single("photo"), async (req,
 // Upload Login Background (Admin)
 app.post("/api/login-background/upload", authMiddleware, upload.single("bgImage"), async (req, res) => {
   try {
-    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
     const newBackground = new LoginBackground({ imageUrl });
     await newBackground.save();
     res.json({ success: true, imageUrl });
