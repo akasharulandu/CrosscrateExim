@@ -232,3 +232,28 @@
 .modal-fade .modal-content {
   transition: all 0.3s ease;
 }
+.fullscreen-modal .modal-dialog {
+  max-width: 90vw;
+  margin: auto;
+}
+
+.product-modal-body {
+  max-height: 75vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* Fancy scrollbar */
+.product-modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+.product-modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.product-modal-body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+.product-modal-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

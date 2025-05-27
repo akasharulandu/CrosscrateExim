@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, Modal, Carousel } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
+import { FaWhatsapp, FaEnvelope, FaFilePdf } from "react-icons/fa";
 import "./Home.css";
 import axios from "axios";
 import About from "../pages/About";
@@ -158,6 +160,12 @@ function Home({ isAdmin }) {
         className="fade modal-fade"
         backdrop="static"
       >
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.4 }}
+        >
+
         <Modal.Header closeButton style={{
   backgroundImage: "linear-gradient(90deg, rgb(11 146 128), rgb(222 182 198)",
   color: "#ffffff",
@@ -219,6 +227,30 @@ function Home({ isAdmin }) {
                     </ul>
                   </>
                 )}
+                <hr />
+                  <div className="d-flex justify-content-start gap-3 mt-3">
+                    <a
+                      href={`https://wa.me/?text=Check out this product: ${selectedProduct?.name}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-success fs-5"
+                    >
+                      <FaWhatsapp />
+                    </a>
+                    <a
+                      href={`mailto:?subject=Product Details - ${selectedProduct?.name}&body=Check out this product: ${selectedProduct?.description}`}
+                      className="text-primary fs-5"
+                    >
+                      <FaEnvelope />
+                    </a>
+                    <a
+                      href="#"
+                      onClick={(e) => e.preventDefault()}
+                      className="text-danger fs-5"
+                    >
+                      <FaFilePdf />
+                    </a>
+                  </div>
               </div>
             </div>
           </div>
@@ -238,6 +270,7 @@ function Home({ isAdmin }) {
             Close
           </Button>
         </Modal.Footer>
+                </motion.div>
       </Modal>
     </div>
   );

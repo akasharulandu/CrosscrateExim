@@ -28,36 +28,6 @@ const ProductCard = ({ product, onClick, language }) => {
         )}
         <div className="card-body text-center">
           <h5 className="card-title">{product.name}</h5>
-
-          {/* Description
-          {product.description && (
-            <>
-              <p className={`card-text ${expanded ? '' : 'text-truncate-description'}`}>
-                {product.description}
-              </p>
-              {product.description.split(' ').length > 20 && (
-                <button
-                  className="btn btn-link p-0"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent modal opening
-                    setExpanded(!expanded);
-                  }}
-                >
-                  {expanded ? 'Show Less' : 'Read More'}
-                </button>
-              )}
-            </>
-          )} */}
-
-          {/* Product Dimensions Table
-          {product.dimensions && (
-            <div className="mt-3">
-              <ProductDimensionTable dimensions={product.dimensions} />
-            </div>
-          )} */}
-
-          {/* Price (Optional - Uncomment if needed) */}
-          {/* <p className="text-success">Price: ₹{product.price}</p> */}
         </div>
       </div>
     </div>
