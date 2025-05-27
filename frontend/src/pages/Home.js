@@ -160,12 +160,12 @@ function Home({ isAdmin }) {
       >
         <Modal.Header closeButton style={{
   backgroundImage: "linear-gradient(90deg, rgb(11 146 128), rgb(222 182 198)",
-  color: "white",
-  borderTopLeftRadius: "1rem",
-  borderTopRightRadius: "1rem"
+  color: "#ffffff",
+  borderTopLeftRadius: "0.3rem",
+  borderTopRightRadius: "0.3rem"
 }}
 >
-          <Modal.Title>{selectedProduct?.name}</Modal.Title>
+          <Modal.Title className="w-100 text-center fw-bold">{selectedProduct?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body
           style={{
@@ -223,12 +223,16 @@ function Home({ isAdmin }) {
             </div>
           </div>
         </Modal.Body>
-        <Modal.Footer className="justify-content-between" style={{backgroundColor: "#f8f9fa"}}>
+        <Modal.Footer>
           <Button variant="secondary" onClick={handlePrevious} disabled={currentIndex === 0}>
-            ◀ Previous
+            Previous
           </Button>
-          <Button variant="secondary" onClick={handleNext} disabled={currentIndex === products.length - 1}>
-            Next ▶
+          <Button
+            variant="secondary"
+            onClick={handleNext}
+            disabled={currentIndex === products.length - 1}
+          >
+            Next
           </Button>
           <Button variant="danger" onClick={handleClose}>
             Close

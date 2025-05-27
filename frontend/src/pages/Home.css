@@ -131,3 +131,104 @@
   font-size: 0.75rem;
   margin: 2px;
 }
+
+/* General home container styles */
+.home-container.light {
+  color: #000;
+}
+
+.home-container.dark {
+  color: #fff;
+}
+
+/* Fancy scrollbar */
+.fancy-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.fancy-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+.fancy-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.fancy-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+/* Modal animation */
+.modal.modal-fade .modal-dialog {
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+  transform: translateY(30px);
+  opacity: 0;
+}
+
+.modal.modal-fade.show .modal-dialog {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Slide-in alert animation */
+.slide-in-alert {
+  animation: slide-in 0.5s ease-out forwards;
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Hero section overlay text styles */
+.hero-section h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.hero-section p {
+  font-size: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero-section p {
+    font-size: 1rem;
+  }
+}
+
+.fancy-scrollbar {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #0b9280 #dcdcdc;
+}
+
+.fancy-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.fancy-scrollbar::-webkit-scrollbar-track {
+  background: #dcdcdc;
+}
+
+.fancy-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #0b9280;
+  border-radius: 3px;
+}
+
+/* Smooth modal fade */
+.modal-fade .modal-content {
+  transition: all 0.3s ease;
+}
