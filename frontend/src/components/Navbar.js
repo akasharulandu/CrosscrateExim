@@ -1,24 +1,50 @@
 // src/components/Navbar.js
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import languageText from "../utils/languageText";
 
 function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLogoutAlert }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const onHomePage = location.pathname === "/";
 
   const navbarText = languageText[language] || {};
 
+  const scrollToSection = (id) => {
+    const section = document.getElementById(id);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleHomeClick = () => {
+    if (onHomePage) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top rounded-bottom">
       <div className="container-fluid px-3">
-        <Link className="navbar-brand d-flex align-items-center" to="/">
-          <img src={logo} alt="Logo" width="70" height="50" className="d-inline-block align-top" />
+        <div
+          className="navbar-brand d-flex align-items-center"
+          style={{ cursor: "pointer" }}
+          onClick={handleHomeClick}
+        >
+          <img
+            src={logo}
+            alt="Logo"
+            width="70"
+            height="50"
+            className="d-inline-block align-top"
+          />
           <span className="brand-text">
             CROSSCRATE <span className="highlight">EXIM</span>
           </span>
-        </Link>
+        </div>
 
         <button
           className="navbar-toggler"
@@ -36,17 +62,33 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
           <ul className="navbar-nav me-auto mt-2 mt-lg-0 custom-nav">
             {onHomePage ? (
               <>
-                <li className="nav-item"><a className="nav-link" href="#home">{navbarText.navbar?.home || "Home"}</a></li>
-                <li className="nav-item"><a className="nav-link" href="#products">{navbarText.navbar?.products || "Products"}</a></li>
-                <li className="nav-item"><a className="nav-link" href="#about">{navbarText.navbar?.about || "About"}</a></li>
-                <li className="nav-item"><a className="nav-link" href="#mission">{navbarText.navbar?.mission || "Mission"}</a></li>
-                <li className="nav-item"><a className="nav-link" href="#values">{navbarText.navbar?.values || "Values"}</a></li>
-                <li className="nav-item"><a className="nav-link" href="#contact">{navbarText.navbar?.contact || "Contact"}</a></li>
+                <li className="nav-item">
+                  <span className="nav-link" style={{ cursor: "pointer" }} onClick={handleHomeClick}>
+                    {navbarText.navbar?.home || "Home"}
+                  </span>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="#products">{navbarText.navbar?.products || "Products"}</a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="#about">{navbarText.navbar?.about || "About"}</a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="#mission">{navbarText.navbar?.mission || "Mission"}</a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="#values">{navbarText.navbar?.values || "Values"}</a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="#contact">{navbarText.navbar?.contact || "Contact"}</a>
+                </li>
               </>
             ) : (
-              <>
-                <li className="nav-item"><Link className="nav-link" to="/">{navbarText.navbar?.home || "Home"}</Link></li>
-              </>
+              <li className="nav-item">
+                <Link className="nav-link" to="/">
+                  {navbarText.navbar?.home || "Home"}
+                </Link>
+              </li>
             )}
           </ul>
 
