@@ -10,7 +10,7 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top rounded-bottom">
       <div className="container-fluid px-3">
-        <a className="navbar-brand d-flex align-items-center" href="#">
+        <a className="navbar-brand d-flex align-items-center" href="#home">
           <img src={logo} alt="Logo" width="70" height="50" className="d-inline-block align-top" />
           <span className="brand-text">
             CROSSCRATE <span className="highlight">EXIM</span>
@@ -31,12 +31,24 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
 
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto mt-2 mt-lg-0 custom-nav">
-            <li className="nav-item"><a className="nav-link" href="#">{navbarText.navbar?.home || "Home"}</a></li>
-            <li className="nav-item"><a className="nav-link" href="#products">{navbarText.navbar?.products || "Products"}</a></li>
-            <li className="nav-item"><a className="nav-link" href="#about">{navbarText.navbar?.about || "About"}</a></li>
-            <li className="nav-item"><a className="nav-link" href="#mission">{navbarText.navbar?.mission || "Mission"}</a></li>
-            <li className="nav-item"><a className="nav-link" href="#values">{navbarText.navbar?.values || "Values"}</a></li>
-            <li className="nav-item"><a className="nav-link" href="#contact">{navbarText.navbar?.contact || "Contact"}</a></li>
+            <li className="nav-item">
+              <a className="nav-link" href="#home">{navbarText.navbar?.home || "Home"}</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="#products">{navbarText.navbar?.products || "Products"}</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="#about">{navbarText.navbar?.about || "About"}</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="#mission">{navbarText.navbar?.mission || "Mission"}</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="#values">{navbarText.navbar?.values || "Values"}</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link" href="#contact">{navbarText.navbar?.contact || "Contact"}</a>
+            </li>
           </ul>
 
           <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">

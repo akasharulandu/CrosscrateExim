@@ -1,6 +1,7 @@
 // src/pages/Home.js
 import React, { useEffect, useState } from "react";
 import { Button, Modal } from "react-bootstrap";
+
 import "./Home.css";
 import axios from "axios";
 import About from "../pages/About";
@@ -20,6 +21,14 @@ function Home({ isAdmin }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
 
+  useEffect(() => {
+    fetchProducts();
+    axios
+      .get("/api/hero")
+      .then((res) => setHeroImage(res.data?.imageUrl || null))
+      .catch((err) => console.error("Failed to fetch hero image:", err));
+  }, []);
+
   const fetchProducts = () => {
     axios
       .get("/api/products")
@@ -27,15 +36,11 @@ function Home({ isAdmin }) {
       .catch((err) => console.error("Error fetching products:", err));
   };
 
-  useEffect(() => {
-    fetchProducts();
-    axios.get("/api/hero").then((res) => setHeroImage(res.data?.imageUrl));
-  }, []);
-
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    document.body.className = newTheme === "light" ? "bg-light text-dark" : "bg-dark text-white";
+    document.body.className =
+      newTheme === "light" ? "bg-light text-dark" : "bg-dark text-white";
   };
 
   const openModal = (product) => {
@@ -59,7 +64,6 @@ function Home({ isAdmin }) {
         </div>
       )}
 
-      {/* Navbar */}
       <Navbar
         isAdmin={isAdmin}
         language={language}
@@ -69,13 +73,13 @@ function Home({ isAdmin }) {
         setShowLogoutAlert={setShowLogoutAlert}
       />
 
-      {/* Hero Section */}
       <div
         className="hero-section d-flex align-items-center justify-content-center"
         style={{
           height: "300px",
-          backgroundImage: `url(${heroImage})`,
+          backgroundImage: `url(${heroImage || ""})`,
           backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
         <div className="text-center text-white bg-dark bg-opacity-50 p-3 rounded">
@@ -84,9 +88,10 @@ function Home({ isAdmin }) {
         </div>
       </div>
 
-      {/* Products Section */}
       <div className="container mt-5" id="products">
-        <h2 className="text-center mb-4 fw-bold">{navbarText.navbar?.products || "Products"}</h2>
+        <h2 className="text-center mb-4 fw-bold">
+          {navbarText.navbar?.products || "Products"}
+        </h2>
         <div className="row">
           {products.map((product) => (
             <ProductCard key={product._id} product={product} onClick={openModal} />
@@ -94,7 +99,6 @@ function Home({ isAdmin }) {
         </div>
       </div>
 
-      {/* Other Sections */}
       <div className="container mt-5" id="about">
         <About language={language} />
       </div>
@@ -111,14 +115,17 @@ function Home({ isAdmin }) {
         <Contact language={language} />
       </div>
 
-      {/* Product Modal */}
       <Modal show={showModal} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>{selectedProduct?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedProduct?.imageUrl && (
-            <img src={selectedProduct.imageUrl} alt={selectedProduct.name} className="img-fluid mb-3" />
+            <img
+              src={selectedProduct.imageUrl}
+              alt={selectedProduct.name}
+              className="img-fluid mb-3"
+            />
           )}
           <p>
             <strong>Description:</strong> {selectedProduct?.description}
