@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Table } from 'react-bootstrap';
 import './ProductCard.css';
+import languageText from "../utils/languageText";
 
-const ProductCard = ({ product, onClick }) => {
+const ProductCard = ({ product, onClick, language }) => {
+  const texts = languageText[language] || {};
   const [expanded, setExpanded] = useState(false);
 
   return (

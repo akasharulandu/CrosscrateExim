@@ -3,7 +3,8 @@ import './About.css'; // Import the CSS styling
 import languageText from "../utils/languageText";
 
 
-function About() {
+function About( ) {
+
   return (
     <div className="about-section container my-5 p-5 text-white" >
       <h2 className="text-center fw-bold">About Us</h2>

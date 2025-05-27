@@ -57,7 +57,7 @@ function Home({ isAdmin }) {
       className={`home-container ${theme}`}
       style={{
         background: theme === "light"
-          ? "linear-gradient(135deg,rgb(220, 249, 244) 0%,rgb(254, 201, 234) 100%)" // warm peach gradient for light
+          ? "linear-gradient(135deg,rgb(220, 249, 244) 0%,rgb(211, 188, 202) 100%)" // warm peach gradient for light
           : "linear-gradient(135deg,rgb(48, 48, 49) 0%,rgb(35, 35, 35) 100%)", // cool blue gradient for dark
         minHeight: "100vh",
         transition: "background 0.5s ease",
@@ -103,8 +103,13 @@ function Home({ isAdmin }) {
         </h2>
         <div className="row">
           {products.map((product) => (
-            <ProductCard key={product._id} product={product} onClick={openModal} />
-          ))}
+  <ProductCard
+    key={product._id}
+    product={product}
+    onClick={openModal}
+    language={language}           // pass language here
+  />
+))}
         </div>
       </div>
 
