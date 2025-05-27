@@ -9,23 +9,20 @@ import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [language, setLanguage] = useState("en");
-  const [theme, setTheme] = useState("light"); // or "dark"
+  const [theme, setTheme] = useState("light");
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) setIsAdmin(true);
+    setIsAdmin(!!token); // true if token exists
   }, []);
 
-  // Toggle theme function example
   const toggleTheme = () => {
     setTheme(prev => (prev === "light" ? "dark" : "light"));
-    // You can add code here to apply the theme to body or root element
   };
 
   return (
     <Router>
-      {/* Navbar appears on every page */}
       <NavigationBar
         isAdmin={isAdmin}
         language={language}
@@ -35,7 +32,6 @@ function App() {
         setShowLogoutAlert={setShowLogoutAlert}
       />
 
-      {/* Optionally show logout alert */}
       {showLogoutAlert && (
         <div className="alert alert-warning text-center" role="alert">
           Logging out...
@@ -49,7 +45,7 @@ function App() {
           path="/dashboard"
           element={
             <ProtectedRoute isAdmin={isAdmin}>
-              <AdminDashboard />
+              <AdminDashboard isAdmin={isAdmin} />
             </ProtectedRoute>
           }
         />

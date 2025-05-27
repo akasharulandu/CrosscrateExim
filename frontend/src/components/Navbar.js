@@ -1,21 +1,24 @@
 // src/components/Navbar.js
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/logo.png";
 import languageText from "../utils/languageText";
 
 function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLogoutAlert }) {
+  const location = useLocation();
+  const onHomePage = location.pathname === "/";
+
   const navbarText = languageText[language] || {};
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top rounded-bottom">
       <div className="container-fluid px-3">
-        <a className="navbar-brand d-flex align-items-center" href="#home">
+        <Link className="navbar-brand d-flex align-items-center" to="/">
           <img src={logo} alt="Logo" width="70" height="50" className="d-inline-block align-top" />
           <span className="brand-text">
             CROSSCRATE <span className="highlight">EXIM</span>
           </span>
-        </a>
+        </Link>
 
         <button
           className="navbar-toggler"
@@ -31,24 +34,20 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
 
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto mt-2 mt-lg-0 custom-nav">
-            <li className="nav-item">
-              <a className="nav-link" href="#home">{navbarText.navbar?.home || "Home"}</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#products">{navbarText.navbar?.products || "Products"}</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#about">{navbarText.navbar?.about || "About"}</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#mission">{navbarText.navbar?.mission || "Mission"}</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#values">{navbarText.navbar?.values || "Values"}</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="#contact">{navbarText.navbar?.contact || "Contact"}</a>
-            </li>
+            {onHomePage ? (
+              <>
+                <li className="nav-item"><a className="nav-link" href="#home">{navbarText.navbar?.home || "Home"}</a></li>
+                <li className="nav-item"><a className="nav-link" href="#products">{navbarText.navbar?.products || "Products"}</a></li>
+                <li className="nav-item"><a className="nav-link" href="#about">{navbarText.navbar?.about || "About"}</a></li>
+                <li className="nav-item"><a className="nav-link" href="#mission">{navbarText.navbar?.mission || "Mission"}</a></li>
+                <li className="nav-item"><a className="nav-link" href="#values">{navbarText.navbar?.values || "Values"}</a></li>
+                <li className="nav-item"><a className="nav-link" href="#contact">{navbarText.navbar?.contact || "Contact"}</a></li>
+              </>
+            ) : (
+              <>
+                <li className="nav-item"><Link className="nav-link" to="/">{navbarText.navbar?.home || "Home"}</Link></li>
+              </>
+            )}
           </ul>
 
           <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
@@ -86,9 +85,9 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
                 </button>
               </>
             ) : (
-              <a href="/admin" className="btn btn-success btn-sm">
+              <Link to="/admin" className="btn btn-success btn-sm">
                 {navbarText.navbar?.login || "Login"}
-              </a>
+              </Link>
             )}
           </div>
         </div>

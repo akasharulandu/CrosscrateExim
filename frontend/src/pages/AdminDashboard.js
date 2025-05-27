@@ -9,7 +9,7 @@ import ProductTable from "../components/ProductTable";
 function AdminDashboard() {
   const navigate = useNavigate();
 
-  // States for Navbar props
+  // Navbar props states
   const [language, setLanguage] = useState("en");
   const [theme, setTheme] = useState("light");
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
@@ -21,12 +21,18 @@ function AdminDashboard() {
   // Products state
   const [products, setProducts] = useState([]);
 
+  // Welcome message state
+  const [showWelcome, setShowWelcome] = useState(true);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
     } else {
       fetchProducts();
+      // Show welcome message only once after login
+      const timeout = setTimeout(() => setShowWelcome(false), 1000); // auto-hide after 3s
+      return () => clearTimeout(timeout);
     }
   }, [navigate]);
 
@@ -93,16 +99,14 @@ function AdminDashboard() {
       />
 
       <div className="container mt-5 pt-5">
+        {showWelcome && (
+          <div className="alert alert-success text-center" role="alert">
+            Welcome to Admin Dashboard!
+          </div>
+        )}
+
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2 className="fw-bold">Admin Dashboard</h2>
-          <div>
-            <button className="btn btn-secondary me-2" onClick={goBackToHome}>
-              Back to Home
-            </button>
-            <button className="btn btn-danger" onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
         </div>
 
         <div className="w-50 mb-5">
