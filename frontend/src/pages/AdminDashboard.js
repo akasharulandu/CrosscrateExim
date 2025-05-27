@@ -9,19 +9,13 @@ import ProductTable from "../components/ProductTable";
 function AdminDashboard() {
   const navigate = useNavigate();
 
-  // Navbar props states
   const [language, setLanguage] = useState("en");
   const [theme, setTheme] = useState("light");
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
 
-  // Hero Image upload states
   const [heroPhoto, setHeroPhoto] = useState(null);
   const [heroPreview, setHeroPreview] = useState(null);
-
-  // Products state
   const [products, setProducts] = useState([]);
-
-  // Welcome message state
   const [showWelcome, setShowWelcome] = useState(true);
 
   useEffect(() => {
@@ -30,8 +24,7 @@ function AdminDashboard() {
       navigate("/login");
     } else {
       fetchProducts();
-      // Show welcome message only once after login
-      const timeout = setTimeout(() => setShowWelcome(false), 1000); // auto-hide after 3s
+      const timeout = setTimeout(() => setShowWelcome(false), 1500);
       return () => clearTimeout(timeout);
     }
   }, [navigate]);
@@ -89,6 +82,7 @@ function AdminDashboard() {
 
   return (
     <>
+    
       <Navbar
         isAdmin={true}
         language={language}
@@ -98,56 +92,105 @@ function AdminDashboard() {
         setShowLogoutAlert={setShowLogoutAlert}
       />
 
-      <div className="container mt-5 pt-5">
+      <div
+        className="container-fluid"
+        style={{
+          minHeight: "100vh",
+          paddingTop: "120px",
+          backgroundImage: "url('https://images.unsplash.com/photo-1707130868349-3ed75fc7fe8f?q=80&w=1942&auto=format&fit=crop')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         {showWelcome && (
-          <div className="alert alert-success text-center" role="alert">
+          <div className="alert alert-success text-center fw-bold" role="alert">
             Welcome to Admin Dashboard!
           </div>
         )}
 
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="fw-bold">Admin Dashboard</h2>
-        </div>
+        <div className="container py-4">
+          <div className="text-center mb-5">
+            <h2 className="fw-bold text-black text-shadow">Admin Dashboard</h2>
+          </div>
 
-        <div className="w-50 mb-5">
-          <h4>Update Hero Image</h4>
-          <form onSubmit={uploadHeroImage}>
-            <input
-              type="file"
-              className="form-control mb-2"
-              accept="image/*"
-              onChange={(e) => {
-                if (e.target.files && e.target.files[0]) {
-                  setHeroPhoto(e.target.files[0]);
-                  setHeroPreview(URL.createObjectURL(e.target.files[0]));
-                } else {
-                  setHeroPhoto(null);
-                  setHeroPreview(null);
-                }
-              }}
-            />
-            {heroPreview && (
-              <img
-                src={heroPreview}
-                alt="Hero Preview"
-                className="img-fluid mb-2"
-                style={{ maxHeight: "200px" }}
+          {/* Hero Image Upload Section */}
+          <div
+            className="card p-4 mb-5 animated-glass"
+            style={{
+              background: "linear-gradient(270deg, #e0c3fc, #8ec5fc)",
+              backgroundSize: "400% 400%",
+              animation: "waveBG 10s ease infinite",
+              border: "none",
+              borderRadius: "16px",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              boxShadow: "0 12px 30px rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            <h4 className="mb-3">Update Hero Image</h4>
+            <form onSubmit={uploadHeroImage}>
+              <input
+                type="file"
+                className="form-control mb-3"
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    setHeroPhoto(e.target.files[0]);
+                    setHeroPreview(URL.createObjectURL(e.target.files[0]));
+                  } else {
+                    setHeroPhoto(null);
+                    setHeroPreview(null);
+                  }
+                }}
               />
-            )}
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={!heroPhoto}
-            >
-              Upload Hero Image
-            </button>
-          </form>
-        </div>
+              {heroPreview && (
+                <img
+                  src={heroPreview}
+                  alt="Hero Preview"
+                  className="img-fluid mb-3 rounded"
+                  style={{ maxHeight: "200px" }}
+                />
+              )}
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={!heroPhoto}
+              >
+                Upload Hero Image
+              </button>
+            </form>
+          </div>
 
-        <div>
-          <ProductTable products={products} />
+          {/* Product Table Section */}
+          <div
+            className="card p-4 mb-5 animated-glass"
+            style={{
+              background: "linear-gradient(270deg, #89f7fe, #66a6ff)",
+              backgroundSize: "400% 400%",
+              animation: "waveBG 10s ease infinite",
+              border: "none",
+              borderRadius: "16px",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
+              boxShadow: "0 12px 30px rgba(102, 166, 255, 0.4)",
+            }}
+          >
+            <h4 className="mb-3">Manage Products</h4>
+            <ProductTable products={products} />
+          </div>
         </div>
       </div>
+
+      {/* Wave Gradient Animation Keyframes */}
+      <style>
+        {`
+        @keyframes waveBG {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        `}
+      </style>
     </>
   );
 }
