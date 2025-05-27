@@ -7,3 +7,25 @@
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   }
   
+  /* .card {
+  border: 2px solid #ccc;
+  transition: box-shadow 0.3s ease;
+} */
+
+/* .card:hover {
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+} */
+
+.card-title {
+  border: 2px solid #f7a712;
+  padding: 8px;
+  border-radius: 6px;
+  background-color: #fbfcfc;
+}
+
+ /* #007bff; */
+
+ /* #f8f9fa; */
+
+ /* #12f7d1; card title border color */
+

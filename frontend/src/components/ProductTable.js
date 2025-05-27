@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Modal, Button, Form, Input, Upload, message, Spin } from 'antd';
-import { PlusOutlined, UploadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Modal, Button, Form, Input, Upload, message, Spin, Checkbox } from 'antd';
+import { PlusOutlined, UploadOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 const { TextArea } = Input;
@@ -11,9 +11,13 @@ const ProductTable = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [form] = Form.useForm();
+  const [photo, setPhoto] = useState(null);
   const [fileList, setFileList] = useState([]);
   const [dimensions, setDimensions] = useState([]);
-  console.log('imageURllllllllllllllllllll',fileList);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(4); // show only 4 products per page
+
+
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -23,7 +27,6 @@ const ProductTable = () => {
     try {
       const response = await axios.get('/api/products');
       setProducts(response.data);
-      console.log("responseeeeeeeeeeeeeeeeeee",response.data);
     } catch (error) {
       console.error(error);
       message.error('Failed to fetch products');
@@ -41,11 +44,17 @@ const ProductTable = () => {
   };
 
   const handleEditProduct = (record) => {
-    console.log("recordafter add00000000000000",record);
     form.setFieldsValue(record);
     setDimensions(record.dimensions || []);
     setFileList(
-      record.imageUrl ? [{ uid: '-1', name: 'image.png', status: 'done', url: record.imageUrl }] : []
+      record.imageUrl
+        ? [{
+            uid: '-1',
+            name: 'image.png',
+            status: 'done',
+            url: record.imageUrl
+          }]
+        : []
     );
     setEditingProduct(record);
     setModalOpen(true);
@@ -77,20 +86,22 @@ const ProductTable = () => {
     try {
       const values = await form.validateFields();
       const formData = new FormData();
+
       formData.append('name', values.name);
       formData.append('price', values.price);
       formData.append('description', values.description);
       formData.append('dimensions', JSON.stringify(dimensions));
-      // if (photo) formData.append("photo", photo);
-
-     
-        formData.append('photo', fileList);
+      if (photo) formData.append("photo", photo);
       
+
+      if (fileList.length > 0 && fileList[0].originFileObj) {
+        formData.append('photo', fileList[0].originFileObj);
+      }
 
       const config = {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'multipart/form-data',
+          // 'Content-Type': 'multipart/form-data',
         },
       };
 
@@ -98,13 +109,13 @@ const ProductTable = () => {
         await axios.put(`/api/products/${editingProduct._id}`, formData, config);
         message.success('Product updated successfully');
       } else {
-        console.log("post Api formData-----------------",formData)
         await axios.post('/api/products/upload', formData, config);
         message.success('Product added successfully');
       }
 
       setModalOpen(false);
-      fetchProducts();    } catch (error) {
+      fetchProducts();
+    } catch (error) {
       console.error(error);
       message.error('Failed to save product');
     }
@@ -138,16 +149,16 @@ const ProductTable = () => {
   };
 
   const uploadProps = {
-    onRemove: () => setFileList([]),
+    listType: 'picture-card',
+    maxCount: 1,
+    fileList,
     beforeUpload: (file) => {
       setFileList([file]);
       return false;
     },
-   
-    fileList,
-    listType: 'picture',
-    maxCount: 1,
-    
+    onRemove: () => {
+      setFileList([]);
+    },
   };
 
   const columns = [
@@ -158,11 +169,98 @@ const ProductTable = () => {
       render: (text) =>
         text ? <img src={text} alt="product" style={{ width: 80, height: 80, objectFit: 'cover' }} /> : 'No Image',
     },
+
+    {/* Column title "Name" and filter functionality */},
+
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-    },
+  title: 'Name',
+  dataIndex: 'name',
+  key: 'name',
+  filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => {
+    const uniqueNames = Array.from(new Set(products.map(p => p.name)));
+    const [searchText, setSearchText] = React.useState('');
+
+    const filteredNames = uniqueNames.filter(name =>
+      name.toLowerCase().includes(searchText.toLowerCase())
+    );
+
+    const onCheckboxChange = (e, name) => {
+      const checked = e.target.checked;
+      if (checked) {
+        setSelectedKeys([...selectedKeys, name]);
+      } else {
+        setSelectedKeys(selectedKeys.filter(k => k !== name));
+      }
+    };
+
+    const onSelectAllChange = (e) => {
+      const checked = e.target.checked;
+      if (checked) {
+        const allFiltered = filteredNames;
+        setSelectedKeys(Array.from(new Set([...selectedKeys, ...allFiltered])));
+      } else {
+        setSelectedKeys(selectedKeys.filter(k => !filteredNames.includes(k)));
+      }
+    };
+
+    const allSelected = filteredNames.every(name => selectedKeys.includes(name));
+    const someSelected = filteredNames.some(name => selectedKeys.includes(name));
+
+    return (
+      <div style={{ padding: 8 }}>
+        <Input
+          placeholder="Search Name"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ marginBottom: 8, display: 'block' }}
+        />
+        <Checkbox
+          indeterminate={!allSelected && someSelected}
+          checked={allSelected}
+          onChange={onSelectAllChange}
+          style={{ marginBottom: 8 }}
+        >
+          Select All
+        </Checkbox>
+        <div style={{ maxHeight: 200, overflowY: 'auto' }}>
+          {filteredNames.map(name => (
+            <div key={name}>
+              <Checkbox
+                checked={selectedKeys.includes(name)}
+                onChange={(e) => onCheckboxChange(e, name)}
+              >
+                {name}
+              </Checkbox>
+            </div>
+          ))}
+        </div>
+        <Button
+          type="primary"
+          onClick={() => confirm()}
+          size="small"
+          style={{ width: 90, marginRight: 8 }}
+        >
+          Apply
+        </Button>
+         <Button
+  onClick={() => {
+    setSelectedKeys([]);        // Clear selected filter values
+    setSearchText('');          // Clear search input
+  }}
+  size="small"
+  style={{ width: 90 }}
+>
+  Reset
+</Button>
+
+      </div>
+    );
+  },
+  filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+  onFilter: (value, record) => record.name === value,
+},
+
+
     {
       title: 'Price',
       dataIndex: 'price',
@@ -209,7 +307,12 @@ const ProductTable = () => {
           <Spin size="large" />
         </div>
       ) : (
-        <Table columns={columns} dataSource={products} rowKey="_id" />
+        <Table columns={columns} dataSource={products} rowKey="_id" pagination={{
+    current: currentPage,
+    pageSize: pageSize,
+    onChange: (page) => setCurrentPage(page),
+  }} />
+
       )}
 
       <Modal
@@ -247,6 +350,12 @@ const ProductTable = () => {
             <TextArea rows={4} />
           </Form.Item>
 
+          <Form.Item><input
+          type="file"
+          className="form-control mb-2"
+          onChange={(e) => setPhoto(e.target.files[0])}
+        /></Form.Item>
+
           <Form.Item label="Dimensions">
             <Button type="dashed" onClick={handleAddDimensionRow} block icon={<PlusOutlined />}>
               Add Dimension Row
@@ -258,91 +367,25 @@ const ProductTable = () => {
               style={{ marginTop: 16 }}
               size="small"
             >
-              <Table.Column
-                title="Ref"
-                dataIndex="ref"
-                render={(text, record, index) => (
-                  <Input
-                    value={text}
-                    onChange={(e) => handleDimensionChange(index, 'ref', e.target.value)}
-                  />
-                )}
-              />
-              <Table.Column
-                title="Grade"
-                dataIndex="grade"
-                render={(text, record, index) => (
-                  <Input
-                    value={text}
-                    onChange={(e) => handleDimensionChange(index, 'grade', e.target.value)}
-                  />
-                )}
-              />
-              <Table.Column
-                title="Length"
-                dataIndex="length"
-                render={(text, record, index) => (
-                  <Input
-                    value={text}
-                    onChange={(e) => handleDimensionChange(index, 'length', e.target.value)}
-                  />
-                )}
-              />
-              <Table.Column
-                title="Width"
-                dataIndex="width"
-                render={(text, record, index) => (
-                  <Input
-                    value={text}
-                    onChange={(e) => handleDimensionChange(index, 'width', e.target.value)}
-                  />
-                )}
-              />
-              <Table.Column
-                title="Height"
-                dataIndex="height"
-                render={(text, record, index) => (
-                  <Input
-                    value={text}
-                    onChange={(e) => handleDimensionChange(index, 'height', e.target.value)}
-                  />
-                )}
-              />
-              <Table.Column
-                title="Recommended For"
-                dataIndex="recommendedFor"
-                render={(text, record, index) => (
-                  <Input
-                    value={text}
-                    onChange={(e) => handleDimensionChange(index, 'recommendedFor', e.target.value)}
-                  />
-                )}
-              />
-              <Table.Column
-                title="Extra Options"
-                dataIndex="extraOptions"
-                render={(text, record, index) => (
-                  <Input
-                    value={text}
-                    onChange={(e) => handleDimensionChange(index, 'extraOptions', e.target.value)}
-                  />
-                )}
-              />
-              <Table.Column
-                title="Action"
-                render={(_, __, index) => (
-                  <Button danger type="text" onClick={() => handleRemoveDimensionRow(index)}>
-                    Delete
-                  </Button>
-                )}
-              />
+              <Table.Column title="Ref" dataIndex="ref" render={(text, _, index) => (
+                <Input value={text} onChange={(e) => handleDimensionChange(index, 'ref', e.target.value)} />
+              )} />
+              <Table.Column title="Grade" dataIndex="grade" render={(text, _, index) => (
+                <Input value={text} onChange={(e) => handleDimensionChange(index, 'grade', e.target.value)} />
+              )} />
+              <Table.Column title="Length" dataIndex="length" render={(text, _, index) => (
+                <Input value={text} onChange={(e) => handleDimensionChange(index, 'length', e.target.value)} />
+              )} />
+              <Table.Column title="Width" dataIndex="width" render={(text, _, index) => (
+                <Input value={text} onChange={(e) => handleDimensionChange(index, 'width', e.target.value)} />
+              )} />
+              <Table.Column title="Height" dataIndex="height" render={(text, _, index) => (
+                <Input value={text} onChange={(e) => handleDimensionChange(index, 'height', e.target.value)} />
+              )} />
+              <Table.Column title="Action" render={(_, __, index) => (
+                <Button danger onClick={() => handleRemoveDimensionRow(index)}>Remove</Button>
+              )} />
             </Table>
-          </Form.Item>
-
-          <Form.Item label="Product Image">
-            <Upload {...uploadProps}>
-              <Button icon={<UploadOutlined />}>Select Image</Button>
-            </Upload>
           </Form.Item>
         </Form>
       </Modal>
