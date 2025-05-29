@@ -1,5 +1,4 @@
-// src/pages/Home.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button, Modal, Carousel } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -13,6 +12,8 @@ import Contact from "../pages/Contact";
 import ProductCard from "../components/ProductCard";
 import languageText from "../utils/languageText";
 import Navbar from "../components/Navbar";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 function Home({ isAdmin }) {
   const [products, setProducts] = useState([]);
@@ -23,6 +24,8 @@ function Home({ isAdmin }) {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(null);
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+
+  const productDetailsRef = useRef(null);
 
   useEffect(() => {
     fetchProducts();
@@ -69,6 +72,74 @@ function Home({ isAdmin }) {
       setSelectedProduct(products[prevIndex]);
       setCurrentIndex(prevIndex);
     }
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!productDetailsRef.current || !selectedProduct) return;
+    const original = productDetailsRef.current;
+
+
+    const container = productDetailsRef.current;
+    const originalStyle = {
+      maxHeight: container.style.maxHeight,
+      overflowY: container.style.overflowY,
+    };
+
+    // Remove height limit for full rendering
+    container.style.maxHeight = "unset";
+    container.style.overflowY = "visible";
+
+    const logo = new Image();
+    logo.src = "/logo.png"; // Ensure this path is correct (public folder)
+
+    logo.onload = () => {
+      html2canvas(container, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+      }).then((canvas) => {
+        // Restore original styles
+        container.style.maxHeight = originalStyle.maxHeight;
+        container.style.overflowY = originalStyle.overflowY;
+
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        // Header
+        pdf.setFillColor(240, 240, 240);
+        pdf.rect(0, 0, pageWidth, 297, "F");
+        pdf.addImage(logo, "PNG", 15, 15, 35, 35);
+        pdf.setFontSize(22);
+        pdf.setTextColor(0, 102, 102);
+        pdf.text("Crosscrate International Exim", 55, 25);
+        pdf.setFontSize(12);
+        pdf.setTextColor(50, 50, 50);
+        pdf.text("Email: contact@crosscrate.com", 55, 33);
+        pdf.text("Phone: +91 98765 43210", 55, 39);
+        pdf.text("Website: www.crosscrate.com", 55, 45);
+        pdf.setDrawColor(180);
+        pdf.line(10, 55, pageWidth - 10, 55);
+        pdf.setFontSize(14);
+        pdf.setTextColor(60, 60, 60);
+        pdf.text("Product Information ↓", 15, 65);
+
+        // Image
+        const imgWidth = pageWidth - 20;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let imgY = 75;
+
+        if (imgHeight > pageHeight - imgY - 10) {
+          pdf.addPage();
+          imgY = 10;
+        }
+
+        pdf.addImage(imgData, "PNG", 10, imgY, imgWidth, imgHeight);
+        pdf.save(`${selectedProduct?.name || "product"}.pdf`);
+      });
+    };
   };
 
   const navbarText = languageText[language] || {};
@@ -151,7 +222,7 @@ function Home({ isAdmin }) {
         <Contact language={language} />
       </div>
 
-      {/* Product Fullscreen Modal */}
+      {/* Modal with Fancy PDF button */}
       <Modal
         show={showModal}
         onHide={handleClose}
@@ -165,69 +236,72 @@ function Home({ isAdmin }) {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.4 }}
         >
+          <Modal.Header
+            closeButton
+            style={{
+              backgroundImage: "linear-gradient(90deg, rgb(11 146 128), rgb(222 182 198)",
+              color: "#ffffff",
+              borderTopLeftRadius: "0.3rem",
+              borderTopRightRadius: "0.3rem",
+            }}
+          >
+            <Modal.Title className="w-100 text-center fw-bold">{selectedProduct?.name}</Modal.Title>
+          </Modal.Header>
 
-        <Modal.Header closeButton style={{
-  backgroundImage: "linear-gradient(90deg, rgb(11 146 128), rgb(222 182 198)",
-  color: "#ffffff",
-  borderTopLeftRadius: "0.3rem",
-  borderTopRightRadius: "0.3rem"
-}}
->
-          <Modal.Title className="w-100 text-center fw-bold">{selectedProduct?.name}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body
-          style={{
-            background: "linear-gradient(135deg, #f0f0f0 0%, #dcdcdc 100%)",
-            maxHeight: "90vh",
-            overflowY: "auto",
-          }}
-        >
-          <div className="row">
-            <div className="col-md-6">
-              {selectedProduct?.images?.length > 0 ? (
-                <Carousel fade>
-                  {selectedProduct.images.map((imgUrl, idx) => (
-                    <Carousel.Item key={idx}>
-                      <img
-                        src={imgUrl}
-                        alt={`Slide ${idx}`}
-                        className="d-block w-100"
-                        style={{ maxHeight: "400px", objectFit: "cover", borderRadius: "8px" }}
-                      />
-                    </Carousel.Item>
-                  ))}
-                </Carousel>
-              ) : (
-                selectedProduct?.imageUrl && (
-                  <img
-                    src={selectedProduct.imageUrl}
-                    alt={selectedProduct.name}
-                    className="img-fluid rounded"
-                    style={{ maxHeight: "400px", objectFit: "cover" }}
-                  />
-                )
-              )}
-            </div>
-
-            <div className="col-md-6">
-              <div className="p-3 bg-white shadow rounded fancy-scrollbar" style={{ maxHeight: "400px", overflowY: "auto" }}>
-                <p><strong>Description:</strong></p>
-                <p>{selectedProduct?.description}</p>
-
-                <p><strong>Price:</strong> ₹{selectedProduct?.price}</p>
-
-                {selectedProduct?.dimensions && (
-                  <>
-                    <hr />
-                    <p><strong>Dimensions:</strong></p>
-                    <ul className="mb-0">
-                      {selectedProduct.dimensions.map((dim, idx) => (
-                        <li key={idx}>{dim}</li>
-                      ))}
-                    </ul>
-                  </>
+          <Modal.Body
+            style={{
+              background: "linear-gradient(135deg, #f0f0f0 0%, #dcdcdc 100%)",
+            }}
+          >
+            <div className="row" ref={productDetailsRef}>
+              <div className="col-md-6">
+                {selectedProduct?.images?.length > 0 ? (
+                  <Carousel fade>
+                    {selectedProduct.images.map((imgUrl, idx) => (
+                      <Carousel.Item key={idx}>
+                        <img
+                          src={imgUrl}
+                          alt={`Slide ${idx}`}
+                          className="d-block w-100"
+                          style={{ maxHeight: "400px", objectFit: "cover", borderRadius: "8px" }}
+                        />
+                      </Carousel.Item>
+                    ))}
+                  </Carousel>
+                ) : (
+                  selectedProduct?.imageUrl && (
+                    <img
+                      src={selectedProduct.imageUrl}
+                      alt={selectedProduct.name}
+                      className="img-fluid rounded"
+                      style={{ maxHeight: "400px", objectFit: "cover" }}
+                    />
+                  )
                 )}
-                <hr />
+              </div>
+
+              <div className="col-md-6">
+                <div
+                  className="p-3 bg-white shadow rounded fancy-scrollbar"
+                  style={{ maxHeight: "400px", overflowY: "auto" }}
+                >
+                  <p><strong>Description:</strong></p>
+                  <p>{selectedProduct?.description}</p>
+
+                  <p><strong>Price:</strong> ₹{selectedProduct?.price}</p>
+
+                  {selectedProduct?.dimensions && (
+                    <>
+                      <hr />
+                      <p><strong>Dimensions:</strong></p>
+                      <ul className="mb-0">
+                        {selectedProduct.dimensions.map((dim, idx) => (
+                          <li key={idx}>{dim}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                  <hr />
                   <div className="d-flex justify-content-start gap-3 mt-3">
                     <a
                       href={`https://wa.me/?text=Check out this product: ${selectedProduct?.name}`}
@@ -245,32 +319,36 @@ function Home({ isAdmin }) {
                     </a>
                     <a
                       href="#"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDownloadPDF();
+                      }}
                       className="text-danger fs-5"
                     >
                       <FaFilePdf />
                     </a>
                   </div>
+                </div>
               </div>
             </div>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handlePrevious} disabled={currentIndex === 0}>
-            Previous
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={handleNext}
-            disabled={currentIndex === products.length - 1}
-          >
-            Next
-          </Button>
-          <Button variant="danger" onClick={handleClose}>
-            Close
-          </Button>
-        </Modal.Footer>
-                </motion.div>
+          </Modal.Body>
+
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handlePrevious} disabled={currentIndex === 0}>
+              Previous
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleNext}
+              disabled={currentIndex === products.length - 1}
+            >
+              Next
+            </Button>
+            <Button variant="danger" onClick={handleClose}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </motion.div>
       </Modal>
     </div>
   );
