@@ -1,10 +1,13 @@
+/* Hero Section */
 .hero-section {
   height: 60vh;
-  background-image: url('https://unsplash.com/s/photos/farm%2C-organic');
+  background-image: linear-gradient(rgba(0, 100, 0, 0.4), rgba(255, 255, 255, 0.2)),
+                    url('https://images.unsplash.com/photo-1602526211544-8d925ff8d377');
   background-size: cover;
   background-position: center;
 }
 
+/* Truncate Description */
 .text-truncate-description {
   height: 100px;
   overflow: hidden;
@@ -19,25 +22,22 @@
   0% { right: -100%; opacity: 0; }
   100% { right: 0; opacity: 1; }
 }
-
 .slide-in-alert {
   animation: slideInAlert 0.5s ease-in-out;
 }
 
+/* Home container */
 .home-container.light {
-  background-color:#f8faf9c4; /* Light gray */
+  background-color: #f8faf9c4;
   min-height: 100vh;
 }
 
-
-/* #f8f9fa; Light gray */
-
+/* Navbar links */
 .custom-nav .nav-link {
   position: relative;
   color: #ffffff !important;
   transition: color 0.3s ease, transform 0.3s ease;
 }
-
 .custom-nav .nav-link::after {
   content: "";
   position: absolute;
@@ -45,15 +45,215 @@
   height: 2px;
   left: 0;
   bottom: 0;
-  background-color: #ffc107; /* Stylish yellow underline */
+  background-color: #ffc107;
   transition: width 0.3s;
 }
-
 .custom-nav .nav-link:hover {
-  color: #ffc107 !important; /* Change link color on hover */
-  transform: translateY(-2px); /* Subtle lift effect */
+  color: #ffc107 !important;
+  transform: translateY(-2px);
+}
+.custom-nav .nav-link:hover::after {
+  width: 100%;
 }
 
-.custom-nav .nav-link:hover::after {
-  width: 100%; /* Animate underline on hover */
+/* Modal styling */
+.product-detail-modal .modal-content {
+  background: linear-gradient(135deg, #ffffff, #f1f8e9);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  max-width: 90vw;
+  width: 100%;
+  box-shadow: 0 5px 20px rgba(129, 239, 184, 0.3);
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+/* Product title */
+.product-detail-modal .modal-title {
+  color: #2e7d32;
+  font-weight: 600;
+  text-align: center;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px #e0e0e0;
+}
+
+/* Fancy scrollbars */
+.fancy-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+.fancy-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.fancy-scrollbar::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+.fancy-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Modal fade animation */
+.modal-fade .modal-dialog {
+  animation: fadeInUp 0.5s ease-out;
+}
+@keyframes fadeInUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Carousel image in modal */
+.carousel .slide img {
+  max-height: 400px;
+  object-fit: contain;
+  border-radius: 10px;
+  margin: auto;
+}
+
+/* Carousel navigation buttons */
+.carousel.carousel-slider .control-arrow {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+}
+
+/* Product tag or rating */
+.product-tag {
+  display: inline-block;
+  background-color: #dcedc8;
+  color: #33691e;
+  padding: 3px 10px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  margin: 2px;
+}
+
+/* General home container styles */
+.home-container.light {
+  color: #000;
+}
+
+.home-container.dark {
+  color: #fff;
+}
+
+/* Fancy scrollbar */
+.fancy-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.fancy-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+.fancy-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.fancy-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+/* Modal animation */
+.modal.modal-fade .modal-dialog {
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+  transform: translateY(30px);
+  opacity: 0;
+}
+
+.modal.modal-fade.show .modal-dialog {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Slide-in alert animation */
+.slide-in-alert {
+  animation: slide-in 0.5s ease-out forwards;
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Hero section overlay text styles */
+.hero-section h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.hero-section p {
+  font-size: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 1.8rem;
+  }
+
+  .hero-section p {
+    font-size: 1rem;
+  }
+}
+
+.fancy-scrollbar {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #0b9280 #dcdcdc;
+}
+
+.fancy-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.fancy-scrollbar::-webkit-scrollbar-track {
+  background: #dcdcdc;
+}
+
+.fancy-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #0b9280;
+  border-radius: 3px;
+}
+
+/* Smooth modal fade */
+.modal-fade .modal-content {
+  transition: all 0.3s ease;
+}
+.fullscreen-modal .modal-dialog {
+  max-width: 90vw;
+  margin: auto;
+}
+
+.product-modal-body {
+  max-height: 75vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+/* Fancy scrollbar */
+.product-modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+.product-modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.product-modal-body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+.product-modal-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
