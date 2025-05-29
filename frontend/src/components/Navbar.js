@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaSun, FaMoon } from "react-icons/fa";
+import { FaSun, FaMoon, FaBell } from "react-icons/fa";
 import logo from "../assets/logo.png";
 import languageText from "../utils/languageText";
 
@@ -19,6 +19,34 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
     }
   };
 
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (isAdmin) {
+      // Fetch unread message count from backend
+      const fetchUnreadCount = async () => {
+        try {
+          const res = await fetch("/api/messages", {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+          if (!res.ok) throw new Error("Failed to fetch messages");
+          const messages = await res.json();
+          const unread = messages.filter((msg) => !msg.read).length;
+          setUnreadCount(unread);
+        } catch (err) {
+          console.error("Error fetching unread messages count", err);
+        }
+      };
+      fetchUnreadCount();
+
+      // Refresh count every 30 seconds
+      const interval = setInterval(fetchUnreadCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isAdmin]);
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top rounded-bottom">
       <div className="container-fluid px-3">
@@ -27,13 +55,7 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
           style={{ cursor: "pointer" }}
           onClick={handleHomeClick}
         >
-          <img
-            src={logo}
-            alt="Logo"
-            width="70"
-            height="50"
-            className="d-inline-block align-top"
-          />
+          <img src={logo} alt="Logo" width="70" height="50" className="d-inline-block align-top" />
           <span className="brand-text">
             CROSSCRATE <span className="highlight">EXIM</span>
           </span>
@@ -61,19 +83,29 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
                   </span>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="#products">{navbarText.navbar?.products || "Products"}</a>
+                  <a className="nav-link" href="#products">
+                    {navbarText.navbar?.products || "Products"}
+                  </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="#about">{navbarText.navbar?.about || "About"}</a>
+                  <a className="nav-link" href="#about">
+                    {navbarText.navbar?.about || "About"}
+                  </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="#mission">{navbarText.navbar?.mission || "Mission"}</a>
+                  <a className="nav-link" href="#mission">
+                    {navbarText.navbar?.mission || "Mission"}
+                  </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="#values">{navbarText.navbar?.values || "Values"}</a>
+                  <a className="nav-link" href="#values">
+                    {navbarText.navbar?.values || "Values"}
+                  </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="#contact">{navbarText.navbar?.contact || "Contact"}</a>
+                  <a className="nav-link" href="#contact">
+                    {navbarText.navbar?.contact || "Contact"}
+                  </a>
                 </li>
               </>
             ) : (
@@ -86,51 +118,71 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
           </ul>
 
           <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-center gap-2">
+            {/* Language Selector */}
             <select
-  className="form-select form-select-sm me-2"
-  value={language}
-  onChange={(e) => setLanguage(e.target.value)}
-  style={{
-    width: "auto",
-    backgroundColor: theme === "dark" ? '#343a40' : '#fff', // dark grey bg on dark theme, white on light
-    color: theme === "dark" ? '#fff' : '#000',            // white text on dark, black on light
-    borderColor: theme === "dark" ? '#6c757d' : '#ced4da', // lighter border on dark
-  }}
->
-  <option value="en">English</option>
-  <option value="ta">Tamil</option>
-  <option value="hi">Hindi</option>
-</select>
+              className="form-select form-select-sm me-2"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              style={{
+                width: "auto",
+                backgroundColor: theme === "dark" ? "#343a40" : "#fff",
+                color: theme === "dark" ? "#fff" : "#000",
+                borderColor: theme === "dark" ? "#6c757d" : "#ced4da",
+              }}
+            >
+              <option value="en">English</option>
+              <option value="ta">Tamil</option>
+              <option value="hi">Hindi</option>
+            </select>
 
-
-            {/* Theme toggle with sun/moon icon */}
+            {/* Theme Toggle Button */}
             <button
-  onClick={toggleTheme}
-  title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-  style={{
-    backgroundColor: theme === "dark" ? '#ffc107' : '#343a40', // bright yellow on dark theme, dark grey on light
-    color: theme === "dark" ? '#343a40' : '#fff',               // dark text on yellow bg, white text on dark bg
-    border: 'none',
-    padding: '5px 10px',
-    fontSize: '14px',
-    borderRadius: '4px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginRight: '0.5rem',
-    cursor: 'pointer',
-    boxShadow: theme === "dark" ? '0 0 8px #ffc107aa' : 'none',
-    transition: 'background-color 0.3s ease, color 0.3s ease',
-  }}
->
-  {theme === "dark" ? <FaSun /> : <FaMoon />}
-  <span style={{ display: window.innerWidth >= 576 ? 'inline' : 'none' }}>
-    {theme === "dark" ? "Light" : "Dark"}
-  </span>
-</button>
+              onClick={toggleTheme}
+              title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              style={{
+                backgroundColor: theme === "dark" ? "#ffc107" : "#343a40",
+                color: theme === "dark" ? "#343a40" : "#fff",
+                border: "none",
+                padding: "5px 10px",
+                fontSize: "14px",
+                borderRadius: "4px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                marginRight: "0.5rem",
+                cursor: "pointer",
+                boxShadow: theme === "dark" ? "0 0 8px #ffc107aa" : "none",
+                transition: "background-color 0.3s ease, color 0.3s ease",
+              }}
+            >
+              {theme === "dark" ? <FaSun /> : <FaMoon />}
+              <span style={{ display: window.innerWidth >= 576 ? "inline" : "none" }}>
+                {theme === "dark" ? "Light" : "Dark"}
+              </span>
+            </button>
 
+            {/* Notification Bell for Admin */}
+            {isAdmin && (
+              <div
+                className="nav-icon position-relative me-3"
+                style={{ cursor: "pointer", fontSize: "1.5rem", color: "white" }}
+                title="Notifications"
+                onClick={() => navigate("/notifications")}
+              >
+                <FaBell />
+                {unreadCount > 0 && (
+                  <span
+                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style={{ fontSize: "0.6rem" }}
+                  >
+                    {unreadCount}
+                    <span className="visually-hidden">unread messages</span>
+                  </span>
+                )}
+              </div>
+            )}
 
-
+            {/* Admin Panel and Logout Buttons */}
             {isAdmin ? (
               <>
                 <Link to="/dashboard" className="btn btn-warning btn-sm me-2">

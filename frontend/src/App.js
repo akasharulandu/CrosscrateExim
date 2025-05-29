@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Notifications from './pages/Notifiactions';
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -49,6 +50,8 @@ function App() {
             </ProtectedRoute>
           }
         />
+        {/* New Notifications Route */}
+        <Route path="/notifications" element={<Notifications />} />
       </Routes>
     </Router>
   );
