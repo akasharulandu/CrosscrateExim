@@ -7,9 +7,6 @@ import path from "path";
 import dotenv from "dotenv";
 import fs from "fs";
 
-import messagesRouter from "./routes/messages.js";      // NEW import
-import { authMiddleware } from "./middleware/auth.js";  // NEW import
-
 // Load environment variables
 dotenv.config();
 
@@ -63,6 +60,18 @@ const LoginBackground = mongoose.model("LoginBackground", new mongoose.Schema({
   uploadedAt: { type: Date, default: Date.now }
 }));
 
+// Middleware: JWT Auth
+const authMiddleware = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).json({ message: "No token provided" });
+  try {
+    jwt.verify(token, SECRET);
+    next();
+  } catch (err) {
+    res.status(403).json({ message: "Invalid or expired token" });
+  }
+};
+
 // Multer Setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
@@ -97,6 +106,7 @@ app.post("/api/products/upload", authMiddleware, upload.single("photo"), async (
   try {
     const { name, description, price, dimensions } = req.body;
     const imageUrl = `/uploads/${req.file.filename}`;
+
 
     const newProduct = new Product({
       name,
@@ -188,14 +198,6 @@ app.get("/api/login-background", async (req, res) => {
   }
 });
 
-// Mount messages router here - NEW
-app.use("/api/messages", messagesRouter);
-
-// Root endpoint
-app.get("/", (req, res) => {
-  res.send("Server is running.");
-});
-
-// Start server
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`🚀 Server started on port ${PORT}`));
+// Start Server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
