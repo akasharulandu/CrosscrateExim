@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Contact.css';
+import bgImage from '../assets/bg-about.jpeg';
 
 function Contact() {
   const [formData, setFormData] = useState({

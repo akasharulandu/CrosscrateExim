@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Notifications.css';
 
-function Notifications() {
+function Notifications({ theme }) {
   const [messages, setMessages] = useState([]);
   const [replyText, setReplyText] = useState({});
   const [loading, setLoading] = useState(true);
@@ -60,11 +60,14 @@ function Notifications() {
     }
   };
 
-  if (loading) return <div className="container mt-5">Loading messages...</div>;
+  const containerClass = theme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark';
+  const cardClass = theme === 'dark' ? 'bg-secondary text-light border-light' : 'bg-white text-dark';
+
+  if (loading) return <div className={`container mt-5 ${containerClass}`}>Loading messages...</div>;
 
   return (
-    <div className="notifications-container container mt-5">
-      <h2 className="notifications-title">Customer Messages</h2>
+    <div className={`notifications-container container mt-5 ${containerClass}`}>
+      <h2 className="notifications-title mb-4">Customer Messages</h2>
 
       {messages.length === 0 ? (
         <p>No messages received.</p>
@@ -73,11 +76,11 @@ function Notifications() {
           {messages.map((msg) => (
             <div
               key={msg._id}
-              className={`message-card list-group-item list-group-item-action mb-3 ${
-                !msg.read ? 'unread bg-light' : ''
+              className={`message-card list-group-item mb-3 ${cardClass} ${
+                !msg.read ? 'unread border border-warning' : ''
               }`}
             >
-              <div className="d-flex justify-content-between">
+              <div className="d-flex justify-content-between flex-wrap">
                 <div>
                   <strong>{msg.name}</strong> ({msg.email})<br />
                   <small className="text-muted">
@@ -85,7 +88,7 @@ function Notifications() {
                   </small>
                   <p className="message-content mt-2">{msg.message}</p>
                   {msg.reply && (
-                    <div className="alert alert-info">
+                    <div className={`alert ${theme === 'dark' ? 'alert-dark' : 'alert-info'}`}>
                       <strong>Reply:</strong> {msg.reply}
                     </div>
                   )}
@@ -107,6 +110,11 @@ function Notifications() {
                   placeholder="Write a reply..."
                   value={replyText[msg._id] || ''}
                   onChange={(e) => handleReplyChange(msg._id, e.target.value)}
+                  style={{
+                    backgroundColor: theme === 'dark' ? '#444' : '#fff',
+                    color: theme === 'dark' ? '#fff' : '#000',
+                    borderColor: theme === 'dark' ? '#666' : '#ced4da',
+                  }}
                 />
                 <button
                   className="btn btn-primary btn-sm mt-2"
@@ -120,10 +128,6 @@ function Notifications() {
           ))}
         </div>
       )}
-
-      <button className="btn btn-secondary mt-3" onClick={() => navigate(-1)}>
-        Back
-      </button>
     </div>
   );
 }

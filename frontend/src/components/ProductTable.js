@@ -1,7 +1,10 @@
+/* Final complete updated ProductTable.js with full dark/light theme support */
+
 import React, { useState, useEffect } from 'react';
-import { Table, Modal, Button, Form, Input, Upload, message, Spin, Checkbox } from 'antd';
-import { PlusOutlined, UploadOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
+import { Table, Modal, Button, Form, Input, Upload, message, Spin, Checkbox, Switch } from 'antd';
+import { PlusOutlined, UploadOutlined, EditOutlined, DeleteOutlined, SearchOutlined, BulbOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import './ProductTable.css';
 
 const { TextArea } = Input;
 
@@ -15,8 +18,8 @@ const ProductTable = () => {
   const [fileList, setFileList] = useState([]);
   const [dimensions, setDimensions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(4); // show only 4 products per page
-
+  const [pageSize] = useState(4);
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -86,25 +89,18 @@ const ProductTable = () => {
     try {
       const values = await form.validateFields();
       const formData = new FormData();
-
       formData.append('name', values.name);
       formData.append('price', values.price);
       formData.append('description', values.description);
       formData.append('dimensions', JSON.stringify(dimensions));
-      if (photo) formData.append("photo", photo);
-      
-
       if (fileList.length > 0 && fileList[0].originFileObj) {
         formData.append('photo', fileList[0].originFileObj);
       }
-
       const config = {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
-          // 'Content-Type': 'multipart/form-data',
         },
       };
-
       if (editingProduct) {
         await axios.put(`/api/products/${editingProduct._id}`, formData, config);
         message.success('Product updated successfully');
@@ -112,7 +108,6 @@ const ProductTable = () => {
         await axios.post('/api/products/upload', formData, config);
         message.success('Product added successfully');
       }
-
       setModalOpen(false);
       fetchProducts();
     } catch (error) {
@@ -142,25 +137,6 @@ const ProductTable = () => {
     ]);
   };
 
-  const handleRemoveDimensionRow = (index) => {
-    const updated = [...dimensions];
-    updated.splice(index, 1);
-    setDimensions(updated);
-  };
-
-  const uploadProps = {
-    listType: 'picture-card',
-    maxCount: 1,
-    fileList,
-    beforeUpload: (file) => {
-      setFileList([file]);
-      return false;
-    },
-    onRemove: () => {
-      setFileList([]);
-    },
-  };
-
   const columns = [
     {
       title: 'Image',
@@ -169,98 +145,11 @@ const ProductTable = () => {
       render: (text) =>
         text ? <img src={text} alt="product" style={{ width: 80, height: 80, objectFit: 'cover' }} /> : 'No Image',
     },
-
-    {/* Column title "Name" and filter functionality */},
-
     {
-  title: 'Name',
-  dataIndex: 'name',
-  key: 'name',
-  filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => {
-    const uniqueNames = Array.from(new Set(products.map(p => p.name)));
-    const [searchText, setSearchText] = React.useState('');
-
-    const filteredNames = uniqueNames.filter(name =>
-      name.toLowerCase().includes(searchText.toLowerCase())
-    );
-
-    const onCheckboxChange = (e, name) => {
-      const checked = e.target.checked;
-      if (checked) {
-        setSelectedKeys([...selectedKeys, name]);
-      } else {
-        setSelectedKeys(selectedKeys.filter(k => k !== name));
-      }
-    };
-
-    const onSelectAllChange = (e) => {
-      const checked = e.target.checked;
-      if (checked) {
-        const allFiltered = filteredNames;
-        setSelectedKeys(Array.from(new Set([...selectedKeys, ...allFiltered])));
-      } else {
-        setSelectedKeys(selectedKeys.filter(k => !filteredNames.includes(k)));
-      }
-    };
-
-    const allSelected = filteredNames.every(name => selectedKeys.includes(name));
-    const someSelected = filteredNames.some(name => selectedKeys.includes(name));
-
-    return (
-      <div style={{ padding: 8 }}>
-        <Input
-          placeholder="Search Name"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          style={{ marginBottom: 8, display: 'block' }}
-        />
-        <Checkbox
-          indeterminate={!allSelected && someSelected}
-          checked={allSelected}
-          onChange={onSelectAllChange}
-          style={{ marginBottom: 8 }}
-        >
-          Select All
-        </Checkbox>
-        <div style={{ maxHeight: 200, overflowY: 'auto' }}>
-          {filteredNames.map(name => (
-            <div key={name}>
-              <Checkbox
-                checked={selectedKeys.includes(name)}
-                onChange={(e) => onCheckboxChange(e, name)}
-              >
-                {name}
-              </Checkbox>
-            </div>
-          ))}
-        </div>
-        <Button
-          type="primary"
-          onClick={() => confirm()}
-          size="small"
-          style={{ width: 90, marginRight: 8 }}
-        >
-          Apply
-        </Button>
-         <Button
-  onClick={() => {
-    setSelectedKeys([]);        // Clear selected filter values
-    setSearchText('');          // Clear search input
-  }}
-  size="small"
-  style={{ width: 90 }}
->
-  Reset
-</Button>
-
-      </div>
-    );
-  },
-  filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-  onFilter: (value, record) => record.name === value,
-},
-
-
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+    },
     {
       title: 'Price',
       dataIndex: 'price',
@@ -297,7 +186,12 @@ const ProductTable = () => {
   ];
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div className={darkMode ? 'dark-mode product-table-container' : 'light-mode product-table-container'}>
+      <div className="theme-toggle">
+        <BulbOutlined style={{ marginRight: 8 }} />
+        <Switch checked={darkMode} onChange={() => setDarkMode(!darkMode)} />
+      </div>
+
       <Button type="primary" icon={<PlusOutlined />} style={{ marginBottom: '16px' }} onClick={handleAddProduct}>
         Add Product
       </Button>
@@ -307,12 +201,17 @@ const ProductTable = () => {
           <Spin size="large" />
         </div>
       ) : (
-        <Table columns={columns} dataSource={products} rowKey="_id" pagination={{
-    current: currentPage,
-    pageSize: pageSize,
-    onChange: (page) => setCurrentPage(page),
-  }} />
-
+        <Table
+          columns={columns}
+          dataSource={products}
+          rowKey="_id"
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            onChange: (page) => setCurrentPage(page),
+          }}
+          className={darkMode ? 'dark-table' : 'light-table'}
+        />
       )}
 
       <Modal
@@ -334,27 +233,17 @@ const ProductTable = () => {
             <Input />
           </Form.Item>
 
-          <Form.Item
-            name="price"
-            label="Product Price"
-            rules={[{ required: true, message: 'Please enter product price' }]}
-          >
+          <Form.Item name="price" label="Product Price">
             <Input type="number" placeholder="Enter price" />
           </Form.Item>
 
-          <Form.Item
-            name="description"
-            label="Description"
-            rules={[{ required: true, message: 'Please enter description' }]}
-          >
+          <Form.Item name="description" label="Description">
             <TextArea rows={4} />
           </Form.Item>
 
-          <Form.Item><input
-          type="file"
-          className="form-control mb-2"
-          onChange={(e) => setPhoto(e.target.files[0])}
-        /></Form.Item>
+          <Form.Item>
+            <input type="file" className="form-control mb-2" onChange={(e) => setPhoto(e.target.files[0])} />
+          </Form.Item>
 
           <Form.Item label="Dimensions">
             <Button type="dashed" onClick={handleAddDimensionRow} block icon={<PlusOutlined />}>
@@ -367,24 +256,41 @@ const ProductTable = () => {
               style={{ marginTop: 16 }}
               size="small"
             >
-              <Table.Column title="Ref" dataIndex="ref" render={(text, _, index) => (
-                <Input value={text} onChange={(e) => handleDimensionChange(index, 'ref', e.target.value)} />
-              )} />
-              <Table.Column title="Grade" dataIndex="grade" render={(text, _, index) => (
-                <Input value={text} onChange={(e) => handleDimensionChange(index, 'grade', e.target.value)} />
-              )} />
-              <Table.Column title="Length" dataIndex="length" render={(text, _, index) => (
-                <Input value={text} onChange={(e) => handleDimensionChange(index, 'length', e.target.value)} />
-              )} />
-              <Table.Column title="Width" dataIndex="width" render={(text, _, index) => (
-                <Input value={text} onChange={(e) => handleDimensionChange(index, 'width', e.target.value)} />
-              )} />
-              <Table.Column title="Height" dataIndex="height" render={(text, _, index) => (
-                <Input value={text} onChange={(e) => handleDimensionChange(index, 'height', e.target.value)} />
-              )} />
-              <Table.Column title="Action" render={(_, __, index) => (
-                <Button danger onClick={() => handleRemoveDimensionRow(index)}>Remove</Button>
-              )} />
+              <Table.Column
+                title="Ref"
+                dataIndex="ref"
+                render={(text, _, index) => (
+                  <Input value={text} onChange={(e) => handleDimensionChange(index, 'ref', e.target.value)} />
+                )}
+              />
+              <Table.Column
+                title="Grade"
+                dataIndex="grade"
+                render={(text, _, index) => (
+                  <Input value={text} onChange={(e) => handleDimensionChange(index, 'grade', e.target.value)} />
+                )}
+              />
+              <Table.Column
+                title="Length"
+                dataIndex="length"
+                render={(text, _, index) => (
+                  <Input value={text} onChange={(e) => handleDimensionChange(index, 'length', e.target.value)} />
+                )}
+              />
+              <Table.Column
+                title="Width"
+                dataIndex="width"
+                render={(text, _, index) => (
+                  <Input value={text} onChange={(e) => handleDimensionChange(index, 'width', e.target.value)} />
+                )}
+              />
+              <Table.Column
+                title="Height"
+                dataIndex="height"
+                render={(text, _, index) => (
+                  <Input value={text} onChange={(e) => handleDimensionChange(index, 'height', e.target.value)} />
+                )}
+              />
             </Table>
           </Form.Item>
         </Form>
