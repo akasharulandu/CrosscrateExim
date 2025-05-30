@@ -72,18 +72,48 @@ function AdminDashboard() {
   };
 
   const handleLogout = () => {
-  localStorage.removeItem("token");
-  navigate("/", { state: { loggedOut: true } }); // Pass state on logout
-};
-
+    localStorage.removeItem("token");
+    navigate("/", { state: { loggedOut: true } });
+  };
 
   const goBackToHome = () => {
     navigate("/");
   };
 
+  // Dynamic Styles based on theme
+  const pageBackground =
+    theme === "dark"
+      ? "#1c1c1e"
+      : "url('https://images.unsplash.com/photo-1707130868349-3ed75fc7fe8f?q=80&w=1942&auto=format&fit=crop')";
+  const textColor = theme === "dark" ? "#ffffff" : "#000000";
+
+  const cardBaseStyle = {
+    border: "none",
+    borderRadius: "16px",
+    backdropFilter: "blur(12px)",
+    WebkitBackdropFilter: "blur(12px)",
+    boxShadow: "0 12px 30px rgba(0, 0, 0, 0.2)",
+    color: textColor,
+  };
+
+  const heroCardStyle = {
+    ...cardBaseStyle,
+    background:
+      theme === "dark"
+        ? "linear-gradient(270deg, #434343, #000000)"
+        : "linear-gradient(270deg, #e0c3fc, #8ec5fc)",
+  };
+
+  const productCardStyle = {
+    ...cardBaseStyle,
+    background:
+      theme === "dark"
+        ? "linear-gradient(270deg, #232526, #414345)"
+        : "linear-gradient(270deg, #89f7fe, #66a6ff)",
+  };
+
   return (
     <>
-    
       <Navbar
         isAdmin={true}
         language={language}
@@ -98,36 +128,33 @@ function AdminDashboard() {
         style={{
           minHeight: "100vh",
           paddingTop: "120px",
-          backgroundImage: "url('https://images.unsplash.com/photo-1707130868349-3ed75fc7fe8f?q=80&w=1942&auto=format&fit=crop')",
+          background: pageBackground,
           backgroundSize: "cover",
           backgroundPosition: "center",
+          color: textColor,
+          transition: "all 0.3s ease",
         }}
       >
         {showWelcome && (
-          <div className="alert alert-success text-center fw-bold" role="alert">
+          <div
+            className={`alert ${
+              theme === "dark" ? "alert-dark" : "alert-success"
+            } text-center fw-bold`}
+            role="alert"
+          >
             Welcome to Admin Dashboard!
           </div>
         )}
 
         <div className="container py-4">
           <div className="text-center mb-5">
-            <h2 className="fw-bold text-black text-shadow">Admin Dashboard</h2>
+            <h2 className="fw-bold" style={{ color: textColor }}>
+              Admin Dashboard
+            </h2>
           </div>
 
           {/* Hero Image Upload Section */}
-          <div
-            className="card p-4 mb-5 animated-glass"
-            style={{
-              background: "linear-gradient(270deg, #e0c3fc, #8ec5fc)",
-              backgroundSize: "400% 400%",
-              animation: "waveBG 10s ease infinite",
-              border: "none",
-              borderRadius: "16px",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              boxShadow: "0 12px 30px rgba(0, 0, 0, 0.2)",
-            }}
-          >
+          <div className="card p-4 mb-5 animated-glass" style={heroCardStyle}>
             <h4 className="mb-3">Update Hero Image</h4>
             <form onSubmit={uploadHeroImage}>
               <input
@@ -154,7 +181,7 @@ function AdminDashboard() {
               )}
               <button
                 type="submit"
-                className="btn btn-primary"
+                className={`btn ${theme === "dark" ? "btn-light" : "btn-primary"}`}
                 disabled={!heroPhoto}
               >
                 Upload Hero Image
@@ -163,21 +190,9 @@ function AdminDashboard() {
           </div>
 
           {/* Product Table Section */}
-          <div
-            className="card p-4 mb-5 animated-glass"
-            style={{
-              background: "linear-gradient(270deg, #89f7fe, #66a6ff)",
-              backgroundSize: "400% 400%",
-              animation: "waveBG 10s ease infinite",
-              border: "none",
-              borderRadius: "16px",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
-              boxShadow: "0 12px 30px rgba(102, 166, 255, 0.4)",
-            }}
-          >
+          <div className="card p-4 mb-5 animated-glass" style={productCardStyle}>
             <h4 className="mb-3">Manage Products</h4>
-            <ProductTable products={products} />
+            <ProductTable products={products} theme={theme} />
           </div>
         </div>
       </div>
@@ -185,11 +200,11 @@ function AdminDashboard() {
       {/* Wave Gradient Animation Keyframes */}
       <style>
         {`
-        @keyframes waveBG {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
+          @keyframes waveBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+          }
         `}
       </style>
     </>

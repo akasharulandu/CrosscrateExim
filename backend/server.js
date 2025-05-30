@@ -1,3 +1,4 @@
+// backend/server.js
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -6,23 +7,21 @@ import jwt from "jsonwebtoken";
 import path from "path";
 import dotenv from "dotenv";
 import fs from "fs";
+import messageRoutes from "./routes/messageRoutes.js";
+import { verifyAdmin } from "./middleware/authMiddleware.js"; // Importing verifyAdmin
 
-// Load environment variables
 dotenv.config();
 
-// Initialize Express app
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Ensure 'uploads' folder exists
 const uploadDir = path.join(process.cwd(), "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
 app.use("/uploads", express.static(uploadDir));
 
-// MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -30,11 +29,9 @@ mongoose.connect(process.env.MONGODB_URI, {
 .then(() => console.log("✅ MongoDB connected"))
 .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// Constants
 const SECRET = process.env.JWT_SECRET || "supersecretkey";
 const ADMIN = { username: "admin", password: "admin123" };
 
-// Models
 const Product = mongoose.model("Product", new mongoose.Schema({
   name: String,
   description: String,
@@ -60,7 +57,6 @@ const LoginBackground = mongoose.model("LoginBackground", new mongoose.Schema({
   uploadedAt: { type: Date, default: Date.now }
 }));
 
-// Middleware: JWT Auth
 const authMiddleware = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ message: "No token provided" });
@@ -72,16 +68,12 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-// Multer Setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 const upload = multer({ storage });
 
-// ------------------- Routes -------------------
-
-// Admin Login
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN.username && password === ADMIN.password) {
@@ -91,7 +83,6 @@ app.post("/api/login", (req, res) => {
   res.status(401).json({ success: false, message: "Invalid credentials" });
 });
 
-// Get Products (Public)
 app.get("/api/products", async (req, res) => {
   try {
     const products = await Product.find();
@@ -101,12 +92,10 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-// Upload Product (Admin)
 app.post("/api/products/upload", authMiddleware, upload.single("photo"), async (req, res) => {
   try {
     const { name, description, price, dimensions } = req.body;
     const imageUrl = `/uploads/${req.file.filename}`;
-
 
     const newProduct = new Product({
       name,
@@ -123,7 +112,6 @@ app.post("/api/products/upload", authMiddleware, upload.single("photo"), async (
   }
 });
 
-// Delete Product (Admin)
 app.delete("/api/products/:id", authMiddleware, async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);
@@ -133,7 +121,6 @@ app.delete("/api/products/:id", authMiddleware, async (req, res) => {
   }
 });
 
-// Update Product (Admin)
 app.put("/api/products/:id", authMiddleware, upload.single("photo"), async (req, res) => {
   try {
     const { name, description, price, dimensions } = req.body;
@@ -154,7 +141,6 @@ app.put("/api/products/:id", authMiddleware, upload.single("photo"), async (req,
   }
 });
 
-// Get Hero Image (Public)
 app.get("/api/hero", async (req, res) => {
   try {
     const heroImage = await HeroImage.findOne().sort({ _id: -1 });
@@ -164,7 +150,6 @@ app.get("/api/hero", async (req, res) => {
   }
 });
 
-// Upload Hero Image (Admin)
 app.post("/api/hero/upload", authMiddleware, upload.single("photo"), async (req, res) => {
   try {
     const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
@@ -172,32 +157,33 @@ app.post("/api/hero/upload", authMiddleware, upload.single("photo"), async (req,
     await newHeroImage.save();
     res.json(newHeroImage);
   } catch (err) {
-    res.status(500).json({ message: "Hero image upload failed" });
+    res.status(500).json({ message: "Hero image upload failed", error: err.message });
   }
 });
 
-// Upload Login Background (Admin)
-app.post("/api/login-background/upload", authMiddleware, upload.single("bgImage"), async (req, res) => {
+app.post("/api/loginbackground/upload", authMiddleware, upload.single("photo"), async (req, res) => {
   try {
     const imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
     const newBackground = new LoginBackground({ imageUrl });
     await newBackground.save();
-    res.json({ success: true, imageUrl });
+    res.json(newBackground);
   } catch (err) {
-    res.status(500).json({ message: "Login background upload failed" });
+    res.status(500).json({ message: "Login background upload failed", error: err.message });
   }
 });
 
-// Get Latest Login Background (Public)
-app.get("/api/login-background", async (req, res) => {
+app.get("/api/loginbackground", async (req, res) => {
   try {
-    const latestBackground = await LoginBackground.findOne().sort({ uploadedAt: -1 });
-    res.json({ imageUrl: latestBackground?.imageUrl || "" });
+    const bg = await LoginBackground.findOne().sort({ uploadedAt: -1 });
+    res.json(bg || {});
   } catch (err) {
-    res.status(500).json({ message: "Failed to fetch login background" });
+    res.status(500).json({ message: "Failed to fetch login background image" });
   }
 });
 
-// Start Server
+app.use("/api/messages", messageRoutes);
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

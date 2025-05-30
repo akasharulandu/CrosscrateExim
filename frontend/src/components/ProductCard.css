@@ -16,11 +16,24 @@
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
 } */
 
-.card-title {
+/* .card-title {
   border: 2px solid #f7a712;
   padding: 8px;
   border-radius: 6px;
   background-color: #fbfcfc;
+} */
+
+.card-title {
+  position: relative;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  background: linear-gradient(#fbfcfc, #fbfcfc) padding-box,
+              linear-gradient(135deg, #12f7cd, #f71271) border-box;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  display: inline-block;
+  color: #333; /* default text color */
 }
 
  /* #007bff; */

@@ -1,0 +1,38 @@
+.notifications-container {
+  margin-top: 80px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+}
+
+.notifications-title {
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.message-card {
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  background-color: #f8f9fa;
+}
+
+.message-card.unread {
+  background-color: #e9ecef;
+  border-left: 4px solid #007bff;
+}
+
+.message-content {
+  margin-top: 10px;
+  white-space: pre-wrap;
+  font-size: 1rem;
+}
+
+.reply-section {
+  margin-top: 15px;
+}
+
+.reply-section textarea,
+textarea.form-control {
+  resize: vertical;
+}
