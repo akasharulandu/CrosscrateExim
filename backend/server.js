@@ -33,18 +33,33 @@ const SECRET = process.env.JWT_SECRET || "supersecretkey";
 const ADMIN = { username: "admin", password: "admin123" };
 
 const Product = mongoose.model("Product", new mongoose.Schema({
-  name: String,
-  description: String,
+  name: {
+    en: { type: String, required: true },
+    ta: { type: String },
+    hi: { type: String },
+    ml: { type: String }
+  },
+  description: {
+    en: { type: String, required: true },
+    ta: { type: String },
+    hi: { type: String },
+    ml: { type: String }
+  },
   price: Number,
   imageUrl: String,
-  dimensions: [{
-    ref: String,
-    grade: String,
-    length: String,
-    width: String,
-    height: String,
-    recommendedFor: String,
-    extraOptions: String,
+  specs: [{
+    label: {
+      en: { type: String, required: true },
+      ta: { type: String },
+      hi: { type: String },
+      ml: { type: String }
+    },
+    value: {
+      en: { type: String, required: true },
+      ta: { type: String },
+      hi: { type: String },
+      ml: { type: String }
+    }
   }]
 }));
 
@@ -94,20 +109,38 @@ app.get("/api/products", async (req, res) => {
 
 app.post("/api/products/upload", authMiddleware, upload.single("photo"), async (req, res) => {
   try {
-    const { name, description, price, dimensions } = req.body;
-    const imageUrl = `/uploads/${req.file.filename}`;
+    const { price, specs } = req.body;
+    let imageUrl = "";
+    if (req.file) {
+      imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    // Parse multilingual fields
+    const name = {};
+    const description = {};
+    Object.keys(req.body).forEach(key => {
+      if (key.startsWith('name[')) {
+        const lang = key.match(/\[(.*?)\]/)[1];
+        name[lang] = req.body[key];
+      }
+      if (key.startsWith('description[')) {
+        const lang = key.match(/\[(.*?)\]/)[1];
+        description[lang] = req.body[key];
+      }
+    });
 
     const newProduct = new Product({
       name,
       description,
       price,
       imageUrl,
-      dimensions: dimensions ? JSON.parse(dimensions) : []
+      specs: specs ? JSON.parse(specs) : []
     });
 
     await newProduct.save();
     res.json(newProduct);
   } catch (err) {
+    console.error("Product upload failed:", err);
     res.status(500).json({ message: "Product upload failed", error: err.message });
   }
 });
@@ -123,20 +156,37 @@ app.delete("/api/products/:id", authMiddleware, async (req, res) => {
 
 app.put("/api/products/:id", authMiddleware, upload.single("photo"), async (req, res) => {
   try {
-    const { name, description, price, dimensions } = req.body;
+    const { price, specs } = req.body;
+    
+    // Parse multilingual fields
+    const name = {};
+    const description = {};
+    Object.keys(req.body).forEach(key => {
+      if (key.startsWith('name[')) {
+        const lang = key.match(/\[(.*?)\]/)[1];
+        name[lang] = req.body[key];
+      }
+      if (key.startsWith('description[')) {
+        const lang = key.match(/\[(.*?)\]/)[1];
+        description[lang] = req.body[key];
+      }
+    });
+
     const updateData = {
       name,
       description,
       price,
-      dimensions: dimensions ? JSON.parse(dimensions) : [],
+      specs: specs ? JSON.parse(specs) : [],
     };
+
     if (req.file) {
-      updateData.imageUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+      updateData.imageUrl = `/uploads/${req.file.filename}`;
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
     res.json(updatedProduct);
   } catch (err) {
+    console.error("Failed to update product:", err);
     res.status(500).json({ message: "Failed to update product", error: err.message });
   }
 });

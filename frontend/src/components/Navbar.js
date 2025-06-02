@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaSun, FaMoon, FaBell } from "react-icons/fa";
 import logo from "../assets/logo.png";
 import languageText from "../utils/languageText";
+import Notifications from "../pages/Notifiactions";
 
 function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLogoutAlert }) {
   const location = useLocation();
@@ -10,6 +11,7 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
   const onHomePage = location.pathname === "/";
 
   const navbarText = languageText[language] || {};
+  const productText = languageText[language]?.product || {};
 
   const handleHomeClick = () => {
     if (onHomePage) {
@@ -46,6 +48,8 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
       return () => clearInterval(interval);
     }
   }, [isAdmin]);
+
+  const themeClass = theme === "dark" ? "dark-theme" : "light-theme";
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top rounded-bottom">
@@ -133,6 +137,7 @@ function Navbar({ isAdmin, language, setLanguage, theme, toggleTheme, setShowLog
               <option value="en">English</option>
               <option value="ta">Tamil</option>
               <option value="hi">Hindi</option>
+              <option value="ml">Malayalam</option>
             </select>
 
             {/* Theme Toggle Button */}

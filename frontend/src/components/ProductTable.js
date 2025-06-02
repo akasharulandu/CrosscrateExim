@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Table, Modal, Button, Form, Input, Upload, message, Spin, Checkbox, Switch } from 'antd';
-import { PlusOutlined, UploadOutlined, EditOutlined, DeleteOutlined, SearchOutlined, BulbOutlined } from '@ant-design/icons';
+import { PlusOutlined, UploadOutlined, EditOutlined, DeleteOutlined, SearchOutlined, BulbOutlined, EyeOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import './ProductTable.css';
 
@@ -16,7 +16,7 @@ const ProductTable = () => {
   const [form] = Form.useForm();
   const [photo, setPhoto] = useState(null);
   const [fileList, setFileList] = useState([]);
-  const [dimensions, setDimensions] = useState([]);
+  const [specs, setSpecs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(4);
   const [darkMode, setDarkMode] = useState(false);
@@ -40,7 +40,7 @@ const ProductTable = () => {
 
   const handleAddProduct = () => {
     form.resetFields();
-    setDimensions([]);
+    setSpecs([]);
     setFileList([]);
     setEditingProduct(null);
     setModalOpen(true);
@@ -48,7 +48,7 @@ const ProductTable = () => {
 
   const handleEditProduct = (record) => {
     form.setFieldsValue(record);
-    setDimensions(record.dimensions || []);
+    setSpecs(record.specs || []);
     setFileList(
       record.imageUrl
         ? [{
@@ -85,22 +85,72 @@ const ProductTable = () => {
     });
   };
 
+  const handleImageChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
+
+  const handlePreview = async file => {
+    let src = file.url;
+    if (!src) {
+      src = await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+        reader.onload = () => resolve(reader.result);
+      });
+    }
+    const image = new window.Image();
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(image.outerHTML);
+  };
+
+  const handleSpecChange = (index, field, value) => {
+    const updated = [...specs];
+    updated[index][field] = value;
+    setSpecs(updated);
+  };
+
+  const handleAddSpecRow = () => {
+    setSpecs([
+      ...specs,
+      {
+        key: Date.now(),
+        label: '',
+        value: '',
+      },
+    ]);
+  };
+
+  const handleRemoveSpecRow = (index) => {
+    const updated = [...specs];
+    updated.splice(index, 1);
+    setSpecs(updated);
+  };
+
   const handleFormSubmit = async () => {
     try {
       const values = await form.validateFields();
+      // Filter out incomplete spec rows
+      const finalSpecs = specs.filter(spec => spec.label.trim() && spec.value.trim());
+      
       const formData = new FormData();
       formData.append('name', values.name);
       formData.append('price', values.price);
       formData.append('description', values.description);
-      formData.append('dimensions', JSON.stringify(dimensions));
+      // Convert specs array to string for FormData
+      formData.append('specs', JSON.stringify(finalSpecs));
+      
       if (fileList.length > 0 && fileList[0].originFileObj) {
         formData.append('photo', fileList[0].originFileObj);
       }
+
       const config = {
         headers: {
+          'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       };
+
       if (editingProduct) {
         await axios.put(`/api/products/${editingProduct._id}`, formData, config);
         message.success('Product updated successfully');
@@ -111,30 +161,9 @@ const ProductTable = () => {
       setModalOpen(false);
       fetchProducts();
     } catch (error) {
-      console.error(error);
+      console.error('Form submission error:', error);
       message.error('Failed to save product');
     }
-  };
-
-  const handleDimensionChange = (index, field, value) => {
-    const updated = [...dimensions];
-    updated[index][field] = value;
-    setDimensions(updated);
-  };
-
-  const handleAddDimensionRow = () => {
-    setDimensions([
-      ...dimensions,
-      {
-        ref: '',
-        grade: '',
-        length: '',
-        width: '',
-        height: '',
-        recommendedFor: '',
-        extraOptions: '',
-      },
-    ]);
   };
 
   const columns = [
@@ -162,13 +191,13 @@ const ProductTable = () => {
       render: (text) => <span>{text.length > 50 ? text.substring(0, 50) + '...' : text}</span>,
     },
     {
-      title: 'Dimensions',
-      dataIndex: 'dimensions',
-      key: 'dimensions',
-      render: (dims) => (
+      title: 'Specifications',
+      dataIndex: 'specs',
+      key: 'specs',
+      render: (specs) => (
         <ul style={{ paddingLeft: '20px' }}>
-          {dims?.map((dim, index) => (
-            <li key={index}>{`${dim.ref} | ${dim.grade} | ${dim.length}x${dim.width}x${dim.height}`}</li>
+          {specs?.map((spec, index) => (
+            <li key={index}>{`${spec.label}: ${spec.value}`}</li>
           ))}
         </ul>
       ),
@@ -241,57 +270,118 @@ const ProductTable = () => {
             <TextArea rows={4} />
           </Form.Item>
 
-          <Form.Item>
-            <input type="file" className="form-control mb-2" onChange={(e) => setPhoto(e.target.files[0])} />
+          <Form.Item label="Product Image">
+            <Upload
+              listType="picture-card"
+              fileList={fileList}
+              onChange={handleImageChange}
+              onPreview={handlePreview}
+              beforeUpload={() => false}
+              maxCount={1}
+              accept="image/*"
+              showUploadList={{
+                showPreviewIcon: true,
+                showRemoveIcon: true,
+                showDownloadIcon: false,
+              }}
+            >
+              {fileList.length >= 1 ? null : (
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload</div>
+                </div>
+              )}
+            </Upload>
           </Form.Item>
 
-          <Form.Item label="Dimensions">
-            <Button type="dashed" onClick={handleAddDimensionRow} block icon={<PlusOutlined />}>
-              Add Dimension Row
-            </Button>
-            <Table
-              dataSource={dimensions}
-              pagination={false}
-              rowKey={(record, index) => index}
-              style={{ marginTop: 16 }}
-              size="small"
-            >
-              <Table.Column
-                title="Ref"
-                dataIndex="ref"
-                render={(text, _, index) => (
-                  <Input value={text} onChange={(e) => handleDimensionChange(index, 'ref', e.target.value)} />
+          <Form.Item label="Product Specifications">
+            <div className="spec-container p-3 rounded" style={{ 
+              background: darkMode ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.2)',
+              border: `1px solid ${darkMode ? '#444' : '#ddd'}`,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}>
+              <div className="spec-header d-flex align-items-center justify-content-between mb-3">
+                <h6 className="m-0">Product Specifications</h6>
+                <Button 
+                  type="primary"
+                  onClick={handleAddSpecRow}
+                  icon={<PlusOutlined />}
+                  style={{
+                    background: darkMode ? '#1890ff' : '#40a9ff',
+                    borderColor: darkMode ? '#1890ff' : '#40a9ff'
+                  }}
+                >
+                  Add Specification
+                </Button>
+              </div>
+              
+              <div className="spec-table">
+                {specs.map((spec, idx) => (
+                  <div 
+                    className="spec-row d-flex align-items-center gap-2 mb-3 p-2 rounded" 
+                    key={spec.key || idx}
+                    style={{
+                      background: darkMode ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.4)',
+                      border: `1px solid ${darkMode ? '#333' : '#eee'}`,
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    <div className="spec-number" style={{ 
+                      minWidth: '30px',
+                      height: '30px',
+                      borderRadius: '50%',
+                      background: darkMode ? '#1f1f1f' : '#f0f0f0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.8rem',
+                      color: darkMode ? '#fff' : '#666'
+                    }}>
+                      {idx + 1}
+                    </div>
+                    <Input
+                      placeholder="Specification (e.g. Size, Weight)"
+                      value={spec.label}
+                      onChange={e => handleSpecChange(idx, 'label', e.target.value)}
+                      style={{ flex: 1 }}
+                    />
+                    <Input
+                      placeholder="Value (e.g. 10cm, 2kg)"
+                      value={spec.value}
+                      onChange={e => handleSpecChange(idx, 'value', e.target.value)}
+                      style={{ flex: 1 }}
+                    />
+                    <Button
+                      type="text"
+                      danger
+                      icon={<DeleteOutlined />}
+                      onClick={() => handleRemoveSpecRow(idx)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '32px',
+                        height: '32px',
+                        padding: 0
+                      }}
+                    />
+                  </div>
+                ))}
+                
+                {specs.length === 0 && (
+                  <div 
+                    className="text-center p-4 rounded"
+                    style={{
+                      background: darkMode ? 'rgba(0,0,0,0.1)' : 'rgba(0,0,0,0.02)',
+                      border: `1px dashed ${darkMode ? '#444' : '#ddd'}`,
+                      color: darkMode ? '#888' : '#666'
+                    }}
+                  >
+                    No specifications added yet. Click "Add Specification" to start adding product details.
+                  </div>
                 )}
-              />
-              <Table.Column
-                title="Grade"
-                dataIndex="grade"
-                render={(text, _, index) => (
-                  <Input value={text} onChange={(e) => handleDimensionChange(index, 'grade', e.target.value)} />
-                )}
-              />
-              <Table.Column
-                title="Length"
-                dataIndex="length"
-                render={(text, _, index) => (
-                  <Input value={text} onChange={(e) => handleDimensionChange(index, 'length', e.target.value)} />
-                )}
-              />
-              <Table.Column
-                title="Width"
-                dataIndex="width"
-                render={(text, _, index) => (
-                  <Input value={text} onChange={(e) => handleDimensionChange(index, 'width', e.target.value)} />
-                )}
-              />
-              <Table.Column
-                title="Height"
-                dataIndex="height"
-                render={(text, _, index) => (
-                  <Input value={text} onChange={(e) => handleDimensionChange(index, 'height', e.target.value)} />
-                )}
-              />
-            </Table>
+              </div>
+            </div>
           </Form.Item>
         </Form>
       </Modal>

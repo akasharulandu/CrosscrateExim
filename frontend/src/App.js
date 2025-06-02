@@ -40,7 +40,7 @@ function App() {
       )}
 
       <Routes>
-        <Route path="/" element={<Home isAdmin={isAdmin} />} />
+        <Route path="/" element={<Home language={language} isAdmin={isAdmin} />} />
         <Route path="/admin" element={<Login setIsAdmin={setIsAdmin} />} />
         <Route
           path="/dashboard"
@@ -51,7 +51,7 @@ function App() {
           }
         />
         {/* New Notifications Route */}
-        <Route path="/notifications" element={<Notifications />} />
+        <Route path="/notifications" element={<Notifications theme={theme} />} />
       </Routes>
     </Router>
   );

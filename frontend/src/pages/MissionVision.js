@@ -6,7 +6,7 @@ import languageText from "../utils/languageText";
 function MissionVision() {
   return (
     <div className="mission-vision-box container my-5 p-5 text-white">
-      <h2 className="text-center fw-bold">Mission & Vision</h2>
+     <strong><h2 className="text-center fw-bold">Mission & Vision</h2></strong> <br />
 
       <p><strong>Our Mission:</strong> To provide high-quality, eco-friendly coir pith products to global
       markets, supporting sustainable agriculture and environmental

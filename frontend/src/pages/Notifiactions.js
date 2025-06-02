@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Notifications.css";
+import { FaEnvelopeOpen, FaEnvelope, FaTrash } from "react-icons/fa";
+import { Modal } from "react-bootstrap";
 
-function Notifications({ theme }) {
+function Notifications({ theme, onUnreadCountChange }) {
   const [messages, setMessages] = useState([]);
   const [replyText, setReplyText] = useState({});
   const [loading, setLoading] = useState(true);
+  const [selectedMsg, setSelectedMsg] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [filter, setFilter] = useState("all");
+
+  // THEME CLASS
+  const themeClass = theme === "dark" ? "dark-theme" : "light-theme";
 
   // Fetch messages from backend API
   const fetchMessages = async () => {
@@ -39,6 +47,12 @@ function Notifications({ theme }) {
   useEffect(() => {
     fetchMessages();
   }, []);
+
+  // Calculate unread count and notify parent (e.g., Navbar)
+  useEffect(() => {
+    const unreadCount = messages.filter((msg) => !msg.read).length;
+    if (onUnreadCountChange) onUnreadCountChange(unreadCount);
+  }, [messages, onUnreadCountChange]);
 
   const handleReplyChange = (id, value) => {
     setReplyText((prev) => ({ ...prev, [id]: value }));
@@ -114,67 +128,133 @@ function Notifications({ theme }) {
     }
   };
 
-  const containerClass = theme === "dark" ? "bg-dark text-light" : "bg-light text-dark";
-  const cardClass = theme === "dark" ? "bg-secondary text-light border-light" : "bg-white text-dark";
+  // Mark as read when opening a message
+  const handleOpenMessage = async (msg) => {
+    setSelectedMsg(msg);
+    setShowModal(true);
 
-  if (loading) return <div className={`container mt-5 ${containerClass}`}>Loading messages...</div>;
+    if (!msg.read) {
+      try {
+        const token = localStorage.getItem("token");
+        await axios.put(`/api/messages/${msg._id}/read`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setMessages((prev) =>
+          prev.map((m) => (m._id === msg._id ? { ...m, read: true } : m))
+        );
+      } catch (err) {
+        // handle error
+      }
+    }
+  };
+
+  // Filter messages based on filter state
+  const filteredMessages = messages.filter(msg => {
+    if (filter === "all") return true;
+    if (filter === "unread") return !msg.read;
+    if (filter === "read") return msg.read;
+    return true;
+  });
+
+  if (loading) return <div className={`container mt-5 ${themeClass}`}>Loading messages...</div>;
 
   return (
-    <div className={`notifications-container container mt-5 ${containerClass}`}>
+    <div className={`notifications-container container mt-5 ${themeClass}`}>
       <h2 className="notifications-title mb-4">Customer Messages</h2>
 
-      {messages.length === 0 ? (
-        <p>No messages received.</p>
+      {/* Filter Buttons */}
+      <div className="notification-filters mb-4">
+        <button
+          className={`notif-filter-btn${filter === "all" ? " active" : ""}`}
+          onClick={() => setFilter("all")}
+        >
+          All
+        </button>
+        <button
+          className={`notif-filter-btn${filter === "unread" ? " active" : ""}`}
+          onClick={() => setFilter("unread")}
+        >
+          Unread
+        </button>
+        <button
+          className={`notif-filter-btn${filter === "read" ? " active" : ""}`}
+          onClick={() => setFilter("read")}
+        >
+          Read
+        </button>
+      </div>
+
+      {filteredMessages.length === 0 ? (
+        <p>No messages found.</p>
       ) : (
-        <div className="list-group">
-          {messages.map((msg) => (
+        <div className="notification-list">
+          {filteredMessages.map((msg) => (
             <div
               key={msg._id}
-              className={`message-card list-group-item mb-3 ${cardClass} ${!msg.read ? "unread border border-warning" : ""}`}
+              className={`notification-row ${msg.read ? "read" : "unread"}`}
             >
-              <div className="d-flex justify-content-between flex-wrap">
-                <div>
-                  <strong>{msg.name}</strong> ({msg.email})<br />
-                  <small className="text-muted">{new Date(msg.createdAt).toLocaleString()}</small>
-                  <p className="message-content mt-2">{msg.message}</p>
-                  {msg.reply && (
-                    <div className={`alert ${theme === "dark" ? "alert-dark" : "alert-info"}`}>
-                      <strong>Reply:</strong> {msg.reply}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <button className="btn btn-danger btn-sm mb-2" onClick={() => handleDelete(msg._id)}>
-                    Delete
-                  </button>
-                </div>
+              <div
+                className="icon"
+                onClick={() => handleOpenMessage(msg)}
+                style={{ cursor: "pointer" }}
+              >
+                {msg.read ? <FaEnvelopeOpen /> : <FaEnvelope />}
               </div>
-
-              <div className="reply-section mt-3">
-                <textarea
-                  className="form-control"
-                  rows="2"
-                  placeholder="Write a reply..."
-                  value={replyText[msg._id] || ""}
-                  onChange={(e) => handleReplyChange(msg._id, e.target.value)}
-                  style={{
-                    backgroundColor: theme === "dark" ? "#444" : "#fff",
-                    color: theme === "dark" ? "#fff" : "#000",
-                    borderColor: theme === "dark" ? "#666" : "#ced4da",
-                  }}
-                />
-                <button
-                  className="btn btn-primary btn-sm mt-2"
-                  disabled={!replyText[msg._id] || replyText[msg._id].trim() === ""}
-                  onClick={() => handleReplySubmit(msg._id)}
-                >
-                  Send Reply
-                </button>
+              <div
+                className="info"
+                onClick={() => handleOpenMessage(msg)}
+                style={{ cursor: "pointer" }}
+              >
+                <div className="sender">{msg.name} <span className="email">({msg.email})</span></div>
+                <div className="snippet">{msg.message.slice(0, 40)}{msg.message.length > 40 ? "..." : ""}</div>
               </div>
+              <div className="date" onClick={() => handleOpenMessage(msg)} style={{ cursor: "pointer" }}>
+                {new Date(msg.createdAt).toLocaleString()}
+              </div>
+              <button
+                className="notif-delete-btn"
+                title="Delete message"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(msg._id);
+                }}
+              >
+                <FaTrash style={{ color: "#e53935" }} />
+              </button>
             </div>
           ))}
         </div>
       )}
+
+      {/* Modal for full message */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {selectedMsg?.name} <span className="text-muted">({selectedMsg?.email})</span>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="mb-2"><strong>Received:</strong> {selectedMsg && new Date(selectedMsg.createdAt).toLocaleString()}</div>
+          <div className="mb-3"><strong>Message:</strong><br />{selectedMsg?.message}</div>
+          {selectedMsg?.reply && (
+            <div className="alert alert-info">
+              <strong>Reply:</strong> {selectedMsg.reply}
+            </div>
+          )}
+          <div className="d-flex justify-content-end mt-4">
+            <button
+              className="notif-delete-btn notif-delete-btn-modal"
+              onClick={() => {
+                setShowModal(false);
+                handleDelete(selectedMsg._id);
+              }}
+              title="Delete message"
+            >
+              <FaTrash style={{ color: "#e53935" }} />
+            </button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }
