@@ -13,27 +13,27 @@ function OurValues() {
         </p>
         <div className="row mt-4">
           <div className="col-md-4 mb-4">
-            <h5 className="fw-bold">Customer orientation</h5>
+            <strong><h5 className="fw-bold">Customer orientation</h5></strong>
             <p>We build relationships that create a positive impact on the lives of our customers</p>
           </div>
           <div className="col-md-4 mb-4">
-            <h5 className="fw-bold">Excellence</h5>
+            <strong><h5 className="fw-bold">Excellence</h5></strong>
             <p>We deliver exceptional products and unmatched services that provide superior values to our customers</p>
           </div>
           <div className="col-md-4 mb-4">
-            <h5 className="fw-bold">Integrity</h5>
+            <strong><h5 className="fw-bold">Integrity</h5></strong>
             <p>We maintain highest standards of integrity in everything we do</p>
           </div>
           <div className="col-md-4 mb-4">
-            <h5 className="fw-bold">Collaboration</h5>
+            <strong><h5 className="fw-bold">Collaboration</h5></strong>
             <p>We cooperate across borders, to fulfill our customers’ needs and realize the company success</p>
           </div>
           <div className="col-md-4 mb-4">
-            <h5 className="fw-bold">Drive for success</h5>
+            <strong><h5 className="fw-bold">Drive for success</h5></strong>
             <p>We pursue a strong desire to succeed in every aspect of our business</p>
           </div>
           <div className="col-md-4 mb-4">
-            <h5 className="fw-bold">Ownership</h5>
+           <strong> <h5 className="fw-bold">Ownership</h5></strong>
             <p>We take personal responsibility for fulfilling our commitments</p>
           </div>
         </div>

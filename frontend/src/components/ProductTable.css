@@ -161,3 +161,103 @@
     font-size: 14px;
   }
 }
+
+/* Stylish Spec Table */
+.spec-table {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.spec-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.spec-label, .spec-value {
+  flex: 1;
+}
+.spec-label {
+  min-width: 180px;
+}
+.spec-value {
+  min-width: 120px;
+}
+.spec-row .ant-btn {
+  margin-left: 4px;
+  margin-top: 0;
+}
+
+.spec-container {
+  transition: all 0.3s ease;
+}
+
+.spec-row {
+  transition: all 0.3s ease;
+}
+
+.spec-row:hover {
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.spec-number {
+  transition: all 0.3s ease;
+}
+
+.spec-row:hover .spec-number {
+  transform: scale(1.1);
+}
+
+.ant-input {
+  transition: all 0.3s ease;
+}
+
+.ant-input:focus {
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.spec-row .ant-btn {
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.spec-row:hover .ant-btn {
+  opacity: 1;
+}
+
+/* Dark mode specific styles */
+.dark-mode .spec-container {
+  background: rgba(0,0,0,0.2);
+}
+
+.dark-mode .spec-row {
+  background: rgba(0,0,0,0.2);
+}
+
+.dark-mode .ant-input {
+  background: rgba(0,0,0,0.2);
+  border-color: #444;
+  color: #fff;
+}
+
+.dark-mode .ant-input::placeholder {
+  color: #888;
+}
+
+/* Animation for adding new specs */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.spec-row {
+  animation: slideDown 0.3s ease;
+}

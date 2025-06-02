@@ -1,7 +1,7 @@
 .mission-vision-box {
     /* background-color: #072f2a; Deep green background */
     background: linear-gradient(rgba(32, 33, 33, 0.9), rgba(7, 47, 42, 0.9)),
-                url('E:\Developping\Own Project developing\CrosscrateExim\frontend\public\images\bg-about.jpeg') center/cover no-repeat;
+    url("../assets/bg-about.jpeg") center/cover no-repeat;
     border-radius: 20px;
     color: white;
   }

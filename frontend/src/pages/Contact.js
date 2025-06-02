@@ -45,7 +45,7 @@ function Contact() {
           <p><strong>Address:</strong> Crosscrate International Exim Private Limited, Al Ameen, Parimanam, Muttom-Allepey, Kerala, India- 690511</p>
           <div className="map-responsive mt-3 rounded">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d100344.82666746552!2d76.2590449318168!3d9.50079350323095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b0885ab61befe03%3A0xa65884cbfbb1fa57!2sAlappuzha%20Beach!5e1!3m2!1sen!2sin!4v1748316986980!5m2!1sen!2sin"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d5148.435980725405!2d76.4908948908284!3d9.25197081838238!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b061fae542b15af%3A0xb53175a1db6f3980!2s7F2V%2B4F4%2C%20Muttom%2C%20Kerala%20690511!5e1!3m2!1sen!2sin!4v1748793399919!5m2!1sen!2sin"
               width="100%"
               height="250"
               style={{ border: 0 }}

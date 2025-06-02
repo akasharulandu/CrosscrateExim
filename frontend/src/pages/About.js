@@ -1,13 +1,17 @@
 import React from 'react';
-import './About.css'; // Import the CSS styling
+import './About.css';
+import bgAbout from '../assets/bg-about.jpeg';
 import languageText from "../utils/languageText";
 
 
 function About( ) {
+  React.useEffect(() => {
+    document.documentElement.style.setProperty('--bg-image', `url(${bgAbout})`);
+  }, []);
 
   return (
     <div className="about-section container my-5 p-5 text-white" >
-      <h2 className="text-center fw-bold">About Us</h2>
+     <strong><h2 className="text-center fw-bold">About Us</h2></strong> <br />
       <p>
         Our company was established by two agriculture graduates from
         Tamil Nadu Agricultural University (TNAU), Coimbatore, with a
